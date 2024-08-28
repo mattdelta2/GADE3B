@@ -154,7 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   pathManager: {fileID: 1975598647}
-  spawnInterval: 2
+  terrain: {fileID: 1106253521}
+  spawnInterval: 5
 --- !u!4 &174013545
 Transform:
   m_ObjectHideFlags: 0
@@ -162,6 +163,55 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 174013543}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &280079536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 280079538}
+  - component: {fileID: 280079537}
+  m_Layer: 0
+  m_Name: MainTower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &280079537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280079536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62e8d455d7db5e64c9e58cd7433dcc01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainTowerPrefab: {fileID: 8162221187273346140, guid: eefec93ded53f464db097aec10be07fb, type: 3}
+  towerPlacement: {fileID: 643516134}
+  pathManager: {fileID: 1975598647}
+  enemySpawner: {fileID: 174013544}
+  terrain: {fileID: 1106253521}
+--- !u!4 &280079538
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280079536}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -577,9 +627,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1106253521}
-  tower: {fileID: 504642035555064327, guid: eefec93ded53f464db097aec10be07fb, type: 3}
-  numberOfSpawnPoints: 10
-  edgeMargin: 10
+  numberOfSpawnPoints: 5
+  edgeMargin: 0
+  minimumDistanceFromTower: 10
 --- !u!4 &1975598648
 Transform:
   m_ObjectHideFlags: 0
@@ -619,12 +669,16 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2128946093}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ad783304673838440925e06241ca9499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainTowerPrefab: {fileID: 8162221187273346140, guid: eefec93ded53f464db097aec10be07fb, type: 3}
   towerPlacement: {fileID: 643516134}
+  pathManager: {fileID: 1975598647}
+  enemySpawner: {fileID: 174013544}
+  terrain: {fileID: 1106253521}
 --- !u!4 &2128946095
 Transform:
   m_ObjectHideFlags: 0
@@ -651,3 +705,4 @@ SceneRoots:
   - {fileID: 2128946095}
   - {fileID: 643516135}
   - {fileID: 174013545}
+  - {fileID: 280079538}
