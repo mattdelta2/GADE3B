@@ -152,10 +152,10 @@ public class EnemySpawner : MonoBehaviour
 
 
 
+    
     public GameObject enemyPrefab;  // The enemy prefab
     public PathManager pathManager;  // Reference to PathManager
     public Terrain terrain;  // Reference to Terrain
-
     public float spawnInterval = 2f;  // Time between enemy spawns
 
     private float timeSinceLastSpawn;
@@ -167,6 +167,10 @@ public class EnemySpawner : MonoBehaviour
         if (pathManager != null)
         {
             spawnPoints = pathManager.GenerateSpawnPoints();
+        }
+        else
+        {
+            Debug.LogError("PathManager is not assigned.");
         }
         timeSinceLastSpawn = 0f;
     }
@@ -196,19 +200,23 @@ public class EnemySpawner : MonoBehaviour
             Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
             float terrainHeight = terrain.SampleHeight(spawnPoint);
             spawnPoint.y = terrainHeight;  // Ensure spawn point is on the terrain
-            GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
 
-            // Set enemy terrain reference and path
+            GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
             EnemyController enemyController = enemy.GetComponent<EnemyController>();
+
             if (enemyController != null)
             {
                 enemyController.SetTerrain(terrain);  // Set terrain reference
-                enemyController.SetPath(pathManager.GeneratePath(spawnPoint));
+                enemyController.SetPath(pathManager.GeneratePath(spawnPoint));  // Set path to move towards the tower
             }
             else
             {
-                Debug.LogError("EnemyController not found on the spawned enemy.");
+                Debug.LogError("EnemyController component missing on enemy prefab.");
             }
+        }
+        else
+        {
+            Debug.LogError("No spawn points available.");
         }
     }
 }

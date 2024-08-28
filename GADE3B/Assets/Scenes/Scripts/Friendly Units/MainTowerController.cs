@@ -59,7 +59,7 @@ public class MainTowerController : MonoBehaviour
             return hit.point;
         }
         return Vector3.zero;
-    }*/
+    }
 
 
 
@@ -119,4 +119,90 @@ public class MainTowerController : MonoBehaviour
         }
         return Vector3.zero;
     }
+
+
+
+
+
+        //spawn tower by clicking the terrain
+    
+    public GameObject mainTowerPrefab;
+    public TowerPlacement towerPlacement;
+    public PathManager pathManager; // Reference to PathManager
+    public EnemySpawner enemySpawner; // Reference to EnemySpawner
+    public Terrain terrain; // Reference to the terrain
+
+    private bool canPlaceMainTower = true;
+    private GameObject placedTower; // Reference to the placed tower
+
+    void Update()
+    {
+        if (canPlaceMainTower && Input.GetMouseButtonDown(0)) // Left click
+        {
+            // Get the center position of the terrain
+            Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
+            float terrainHeight = terrain.SampleHeight(terrainCenter);
+            Vector3 centerPosition = new Vector3(terrainCenter.x, terrainHeight, terrainCenter.z);
+
+            // Place the main tower
+            placedTower = Instantiate(mainTowerPrefab, centerPosition, Quaternion.identity);
+            canPlaceMainTower = false; // Prevent further placement
+
+            // Notify PathManager to generate paths
+            if (pathManager != null && placedTower != null)
+            {
+                pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
+            }
+            else
+            {
+                Debug.LogError("PathManager or placedTower is null.");
+            }
+
+            // Notify EnemySpawner to start spawning enemies
+            if (enemySpawner != null)
+            {
+                enemySpawner.StartSpawning(); // Start enemy spawning
+            }
+        }
+    }*/
+
+    //spawn tower when the game starts
+
+
+    public GameObject mainTowerPrefab;
+    public PathManager pathManager;  // Reference to PathManager
+    public EnemySpawner enemySpawner; // Reference to EnemySpawner
+    public Terrain terrain; // Reference to the terrain
+
+    private GameObject placedTower;  // Reference to the placed tower
+
+    void Start()
+    {
+        // Get the center position of the terrain
+        Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
+        float terrainHeight = terrain.SampleHeight(terrainCenter);
+        Vector3 centerPosition = new Vector3(terrainCenter.x, terrainHeight, terrainCenter.z);
+
+        // Place the main tower
+        placedTower = Instantiate(mainTowerPrefab, centerPosition, Quaternion.identity);
+
+        // Notify PathManager to generate paths
+        if (pathManager != null && placedTower != null)
+        {
+            pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
+        }
+        else
+        {
+            Debug.LogError("PathManager or placedTower is null.");
+        }
+
+        // Notify EnemySpawner to start spawning enemies
+        if (enemySpawner != null)
+        {
+            enemySpawner.StartSpawning(); // Start enemy spawning
+        }
+    }
+
+
+    
 }

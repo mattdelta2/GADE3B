@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 3656129036560133467}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 19.953238, y: 198.98831, z: 4.8449}
+  m_LocalPosition: {x: 0, y: 48, z: 0}
+  m_LocalScale: {x: 3.6424, y: 96.98904, z: 2.8918}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 504642035555064327}
@@ -154,3 +154,4 @@ MonoBehaviour:
   towerPlacement: {fileID: 0}
   pathManager: {fileID: 0}
   enemySpawner: {fileID: 0}
+  terrain: {fileID: 0}
