@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  terrain: {fileID: 0}
 --- !u!1 &5363252220778847642
 GameObject:
   m_ObjectHideFlags: 0

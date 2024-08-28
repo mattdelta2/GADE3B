@@ -170,6 +170,7 @@ public class MainTowerController : MonoBehaviour
 
 
     public GameObject mainTowerPrefab;
+    public GameObject PlacedTower => placedTower;
     public PathManager pathManager;  // Reference to PathManager
     public EnemySpawner enemySpawner; // Reference to EnemySpawner
     public Terrain terrain; // Reference to the terrain
@@ -178,31 +179,48 @@ public class MainTowerController : MonoBehaviour
 
     void Start()
     {
-        // Get the center position of the terrain
+        if (terrain == null)
+        {
+            Debug.LogError("Terrain is not assigned.");
+            return;
+        }
+
         Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
         float terrainHeight = terrain.SampleHeight(terrainCenter);
         Vector3 centerPosition = new Vector3(terrainCenter.x, terrainHeight, terrainCenter.z);
 
-        // Place the main tower
-        placedTower = Instantiate(mainTowerPrefab, centerPosition, Quaternion.identity);
-
-        // Notify PathManager to generate paths
-        if (pathManager != null && placedTower != null)
+        if (placedTower == null)
         {
-            pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
+            placedTower = Instantiate(mainTowerPrefab, centerPosition, Quaternion.identity);
+            Debug.Log($"Main Tower placed at: {centerPosition}");
+
+            if (pathManager != null && placedTower != null)
+            {
+                pathManager.SetTower(placedTower.transform);
+                Debug.Log("PathManager notified to generate paths.");
+            }
+            else
+            {
+                Debug.LogError("PathManager or placedTower is null.");
+            }
+
+            if (enemySpawner != null)
+            {
+                enemySpawner.StartSpawning();
+                Debug.Log("EnemySpawner notified to start spawning.");
+            }
+            else
+            {
+                Debug.LogError("EnemySpawner is null.");
+            }
         }
         else
         {
-            Debug.LogError("PathManager or placedTower is null.");
-        }
-
-        // Notify EnemySpawner to start spawning enemies
-        if (enemySpawner != null)
-        {
-            enemySpawner.StartSpawning(); // Start enemy spawning
+            Debug.LogWarning("Main Tower is already placed.");
         }
     }
 
 
-    
+
+
 }
