@@ -380,7 +380,6 @@ public class PathManager : MonoBehaviour
 
 
 
-
     public Terrain terrain; // Reference to the terrain
     private Transform tower; // The main tower's position
     public int numberOfSpawnPoints = 5;
@@ -430,87 +429,42 @@ public class PathManager : MonoBehaviour
             VisualizePath(path);
         }
 
-        // Now, assign paths to enemies
-        AssignPathsToEnemies(allPaths);
-
-        Debug.Log("Paths generated and assigned.");
+        // Now, assign paths to enemies through a method call in EnemySpawner
+        Debug.Log("Paths generated and ready to be assigned.");
     }
 
-    void AssignPathsToEnemies(List<List<Vector3>> allPaths)
+    // Public method to generate path which can be accessed from other scripts
+    public List<Vector3> GeneratePath(Vector3 startPoint)
     {
-        // Assuming you have a list of enemies or you are spawning them in a method
-        foreach (var enemy in enemies) // or the collection where your enemies are
+        if (tower == null)
         {
-            if (allPaths.Count > 0)
-            {
-                // Assign a path to each enemy, adjust according to your needs
-                enemy.SetPath(allPaths[Random.Range(0, allPaths.Count)]);
-            }
+            Debug.LogError("Tower is not assigned. Cannot generate path.");
+            return new List<Vector3>(); // Return an empty list if tower is not assigned
         }
 
-        public Vector3[] GenerateSpawnPoints()
+        List<Vector3> path = new List<Vector3> { startPoint, tower.position };
+
+        Debug.Log($"Generated Path for Spawn Point {startPoint}:");
+        foreach (var point in path)
         {
-            // Example logic to generate 4 points around the edges
-            List<Vector3> points = new List<Vector3>();
-
-            Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
-            float terrainWidth = terrain.terrainData.size.x;
-            float terrainHeight = terrain.terrainData.size.z;
-
-            points.Add(new Vector3(0, 0, terrainCenter.z)); // Left edge
-            points.Add(new Vector3(terrainWidth, 0, terrainCenter.z)); // Right edge
-            points.Add(new Vector3(terrainCenter.x, 0, 0)); // Bottom edge
-            points.Add(new Vector3(terrainCenter.x, 0, terrainHeight)); // Top edge
-
-            Debug.Log("Spawn points generated:");
-            foreach (var point in points)
-            {
-                Debug.Log($"Spawn Point: {point}");
-            }
-
-            return points.ToArray();
+            Debug.Log($"Path Point: {point}");
         }
 
-
-        public List<Vector3> GeneratePath(Vector3 startPoint)
+        // Draw the path for debugging purposes
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            if (tower == null)
-            {
-                Debug.LogError("Tower is not assigned. Cannot generate path.");
-                return new List<Vector3>(); // Return an empty list if tower is not assigned
-            }
-
-            List<Vector3> path = new List<Vector3> { startPoint, tower.position };
-
-            Debug.Log("Path generated:");
-            foreach (Vector3 point in path)
-            {
-                Debug.Log(point);
-            }
-
-            Debug.Log($"Generated Path for Spawn Point {spawnPoint}:");
-            foreach (var point in path)
-            {
-                Debug.Log($"Path Point: {point}");
-            }
-
-            return path;
-
-            // Draw the path for debugging purposes
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                Debug.DrawLine(path[i], path[i + 1], Color.red, 10f);
-            }
-
-            return path;
+            Debug.DrawLine(path[i], path[i + 1], Color.red, 10f);
         }
 
-        void VisualizePath(List<Vector3> path)
+        return path;
+    }
+
+    void VisualizePath(List<Vector3> path)
+    {
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                Debug.DrawLine(path[i], path[i + 1], Color.red, 30f);
-            }
+            Debug.DrawLine(path[i], path[i + 1], Color.red, 30f);
         }
     }
+
 }

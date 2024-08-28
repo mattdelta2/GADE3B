@@ -256,9 +256,10 @@ public class EnemySpawner : MonoBehaviour
 
 
 
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;  // Array to hold different enemy prefabs
     public Terrain terrain;
     public MainTowerController mainTowerController;
+    public PathManager pathManager;  // Reference to the PathManager
     private Vector3[] spawnPoints;
     private bool spawningEnabled = false;
     private float spawnInterval = 5f; // Time in seconds between spawns
@@ -304,6 +305,9 @@ public class EnemySpawner : MonoBehaviour
 
                 Debug.Log($"Attempting to spawn enemy at: {spawnPoint}");
 
+                // Choose a random enemy prefab to spawn
+                GameObject enemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
                 GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
                 Debug.Log($"Enemy instantiated at: {enemy.transform.position}");
 
@@ -313,9 +317,8 @@ public class EnemySpawner : MonoBehaviour
                 {
                     enemyController.SetTerrain(terrain);  // Set terrain reference
 
-                    // Create a path to the tower
-                    Vector3 towerPosition = mainTowerController.PlacedTower.transform.position;
-                    List<Vector3> path = new List<Vector3> { towerPosition };
+                    // Get the path from the PathManager
+                    List<Vector3> path = pathManager.GeneratePath(spawnPoint);
                     enemyController.SetPath(path);
                     Debug.Log($"Path set for enemy: {path}");
                 }

@@ -153,9 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
-  pathManager: {fileID: 1975598647}
   terrain: {fileID: 1106253521}
-  spawnInterval: 5
+  mainTowerController: {fileID: 280079537}
 --- !u!4 &174013545
 Transform:
   m_ObjectHideFlags: 0
@@ -201,7 +200,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainTowerPrefab: {fileID: 8162221187273346140, guid: eefec93ded53f464db097aec10be07fb, type: 3}
-  towerPlacement: {fileID: 643516134}
   pathManager: {fileID: 1975598647}
   enemySpawner: {fileID: 174013544}
   terrain: {fileID: 1106253521}
@@ -627,9 +625,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1106253521}
-  numberOfSpawnPoints: 5
-  edgeMargin: 0
-  minimumDistanceFromTower: 10
+  numberOfSpawnPoints: 10
+  edgeMargin: 5
+  minimumDistanceFromTower: 200
 --- !u!4 &1975598648
 Transform:
   m_ObjectHideFlags: 0
@@ -661,7 +659,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2128946094
 MonoBehaviour:
   m_ObjectHideFlags: 0
