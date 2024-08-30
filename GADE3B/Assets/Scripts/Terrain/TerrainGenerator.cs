@@ -8,8 +8,8 @@ public class TerrainGenerator : MonoBehaviour
     // Terrain settings
     public int width = 256;
     public int depth = 256;
-    public int height = 20;
-    public float scale = 20f;  // Scale of the noise
+    public int height;
+    public float scale; // Scale of the noise
 
     // Offsets for randomizing terrain
     public float offsetX = 100f;
@@ -22,6 +22,9 @@ public class TerrainGenerator : MonoBehaviour
         {
             terrain = GetComponent<Terrain>();
         }
+
+         height = Random.Range(4, 15);
+         scale = Random.Range(6,20);
 
         // Randomize offsets for unique terrain each time
         offsetX = Random.Range(0f, 9999f);
