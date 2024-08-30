@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -431,6 +432,11 @@ public class PathManager : MonoBehaviour
 
         // Now, assign paths to enemies through a method call in EnemySpawner
         Debug.Log("Paths generated and ready to be assigned.");
+    }
+
+    private Vector3[] GenerateSpawnPoints()
+    {
+        throw new NotImplementedException();
     }
 
     // Public method to generate path which can be accessed from other scripts
