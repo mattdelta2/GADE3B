@@ -7,17 +7,13 @@ public class EnemyManager : MonoBehaviour
     public List<GameObject> enemyPrefabs; // List to hold different enemy prefabs
     private List<EnemyController> activeEnemies = new List<EnemyController>(); // List to track active enemies
 
-    public Terrain terrain; // Reference to the terrain
+    public Transform tower; // Reference to the main tower
 
     void Start()
     {
-        if (terrain == null)
+        if (tower == null)
         {
-            terrain = Terrain.activeTerrain;
-            if (terrain == null)
-            {
-                Debug.LogWarning("Terrain not assigned and no terrain found.");
-            }
+            Debug.LogError("Tower reference is not assigned.");
         }
     }
 
@@ -38,7 +34,8 @@ public class EnemyManager : MonoBehaviour
         if (enemyController != null)
         {
             enemyController.SetPath(path);
-            enemyController.SetTerrain(terrain);
+            enemyController.tower = tower; // Assign the tower to the enemy
+
             activeEnemies.Add(enemyController);
         }
         else

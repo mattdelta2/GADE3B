@@ -191,7 +191,7 @@ public class EnemyController : MonoBehaviour
 
         float terrainHeight = terrain.SampleHeight(position);
         return new Vector3(position.x, terrainHeight, position.z);
-    }*/
+    }
 
 
 
@@ -226,6 +226,11 @@ public class EnemyController : MonoBehaviour
 
     public void SetPath(List<Vector3> newPath)
     {
+        Debug.Log("Path set:");
+        foreach (var point in path)
+        {
+            Debug.Log($"Path Point: {point}");
+        }
         if (terrain == null)
         {
             Debug.LogError("Terrain is not assigned.");
@@ -294,7 +299,102 @@ public class EnemyController : MonoBehaviour
         Vector3 adjustedPosition = new Vector3(position.x, terrainHeight, position.z);
         Debug.Log($"Adjusted Position: {adjustedPosition} for Input Position: {position}");
         return adjustedPosition;
+    }*/
+
+
+
+    public float health = 20f; // Initial health of the enemy
+    public float moveSpeed = 5f; // Speed at which the enemy moves
+    public float damageAmount = 10f; // Damage amount the enemy will deal to the tower
+    public Transform tower; // Reference to the main tower
+    //bool isDead = false;
+
+    private List<Vector3> path;
+    private int currentWaypointIndex = 0;
+
+    private void Start()
+    {
+        if (tower == null)
+        {
+            Debug.LogError("Tower reference is not set.");
+        }
+        MainTowerController towerController = tower.GetComponent<MainTowerController>();
     }
+
+    private void Update()
+    {
+        if (path != null && path.Count > 0)
+        {
+            MoveAlongPath();
+        }
+    }
+
+    public void SetPath(List<Vector3> newPath)
+    {
+        path = newPath;
+        currentWaypointIndex = 0;
+    }
+
+    private void MoveAlongPath()
+    {
+        if (currentWaypointIndex >= path.Count)
+            return;
+
+        Vector3 targetPosition = path[currentWaypointIndex];
+        Vector3 moveDirection = (targetPosition - transform.position).normalized;
+        transform.position += moveDirection * moveSpeed * Time.deltaTime;
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+        {
+            currentWaypointIndex++;
+        }
+
+        // Check if the enemy has reached the tower
+        if (Vector3.Distance(transform.position, tower.position) < 0.1f)
+        {
+            Debug.Log("Enemy reached the tower.");
+            Die(); // Destroy the enemy
+        }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        health -= amount;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        // Handle enemy death
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            EnemyController enemy = other.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damageAmount);
+                Destroy(gameObject); // Destroy the projectile
+            }
+        }
+    }
+
+   /* private void Die()
+    {
+        if (isDead) return; // Prevent multiple death processing
+
+        isDead = true;
+        Debug.Log("Enemy died.");
+        Debug.Log("Enemy died.");
+        // Handle enemy death (e.g., destroy enemy, play animation)
+        Destroy(gameObject);
+    }*/
 }
 
 

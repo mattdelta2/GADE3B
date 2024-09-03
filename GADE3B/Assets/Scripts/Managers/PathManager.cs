@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class PathManager : MonoBehaviour
 {/*
@@ -375,37 +376,32 @@ public class PathManager : MonoBehaviour
         {
             Debug.DrawLine(path[i], path[i + 1], Color.red, 30f);
         }
-    } */
+    } 
 
 
 
 
 
-    public Terrain terrain; // Reference to the terrain
-    private Transform tower; // The main tower's position
+    
+    public Terrain terrain;
     public int numberOfSpawnPoints = 5;
-    public float edgeMargin = 10f; // Margin from the edge of the terrain
-    public float minimumDistanceFromTower = 200f; // Minimum distance from the tower to place spawn points
+    public float edgeMargin = 10f;  // Margin from the edge of the terrain
 
-    private Vector3[] spawnPoints;
+    private Transform tower;  // Reference to the tower's position
 
-    void Start()
+    private void Start()
     {
+        terrain = Terrain.activeTerrain;  // Automatically find the terrain if not assigned
         if (terrain == null)
         {
-            terrain = Terrain.activeTerrain; // Get the active terrain in the scene
-            if (terrain == null)
-            {
-                Debug.LogError("Terrain not found in the scene.");
-                return;
-            }
+            Debug.LogError("Terrain not found in the scene.");
         }
     }
 
     public void SetTower(Transform towerTransform)
     {
         tower = towerTransform;
-        GeneratePathsForTower(); // Generate paths when the tower is set
+        GeneratePathsForTower();
     }
 
     public void GeneratePathsForTower()
@@ -416,61 +412,147 @@ public class PathManager : MonoBehaviour
             return;
         }
 
-        Debug.Log("Generating paths...");
-
-        spawnPoints = GenerateSpawnPoints();
-        List<List<Vector3>> allPaths = new List<List<Vector3>>();
-
+        Vector3[] spawnPoints = GenerateSpawnPoints();
         foreach (Vector3 spawn in spawnPoints)
         {
             List<Vector3> path = GeneratePath(spawn);
-            allPaths.Add(path);
+            VisualizePath(path);  // Optional visualization for debugging
+        }
+    }
 
-            // Optional: Visualize the path
-            VisualizePath(path);
+    public Vector3[] GenerateSpawnPoints()
+    {
+        float terrainWidth = terrain.terrainData.size.x;
+        float terrainHeight = terrain.terrainData.size.z;
+
+        Vector3[] points = new Vector3[numberOfSpawnPoints];
+        for (int i = 0; i < numberOfSpawnPoints; i++)
+        {
+            bool isEdgeX = UnityEngine.Random.value > 0.5f;
+            bool isEdgeZ = UnityEngine.Random.value > 0.5f;
+
+            float x = isEdgeX ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainWidth - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainWidth - edgeMargin);
+            float z = isEdgeZ ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainHeight - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainHeight - edgeMargin);
+
+            Debug.Log($"Generated Spawn Point: {points[i]}");
+            points[i] = new Vector3(x, 0, z);
+            
         }
 
-        // Now, assign paths to enemies through a method call in EnemySpawner
-        Debug.Log("Paths generated and ready to be assigned.");
+        return points;
     }
 
-    private Vector3[] GenerateSpawnPoints()
+    public List<Vector3> GeneratePath(Vector3 spawnPoint)
     {
-        throw new NotImplementedException();
-    }
+        List<Vector3> path = new List<Vector3>();
 
-    // Public method to generate path which can be accessed from other scripts
-    public List<Vector3> GeneratePath(Vector3 startPoint)
-    {
-        if (tower == null)
+        if (tower != null)
+        {
+            path.Add(spawnPoint);
+            path.Add(tower.position);
+        }
+        else
         {
             Debug.LogError("Tower is not assigned. Cannot generate path.");
-            return new List<Vector3>(); // Return an empty list if tower is not assigned
         }
 
-        List<Vector3> path = new List<Vector3> { startPoint, tower.position };
 
-        Debug.Log($"Generated Path for Spawn Point {startPoint}:");
-        foreach (var point in path)
-        {
-            Debug.Log($"Path Point: {point}");
-        }
 
-        // Draw the path for debugging purposes
+        return path;
+    }
+
+    private void VisualizePath(List<Vector3> path)
+    {
         for (int i = 0; i < path.Count - 1; i++)
         {
             Debug.DrawLine(path[i], path[i + 1], Color.red, 10f);
+        }
+    }*/
+
+    public Terrain terrain;
+    public int numberOfSpawnPoints = 5;
+    public float edgeMargin = 10f;  // Margin from the edge of the terrain
+
+    private Transform tower;  // Reference to the tower's position
+
+    private void Start()
+    {
+        terrain = Terrain.activeTerrain;  // Automatically find the terrain if not assigned
+        if (terrain == null)
+        {
+            Debug.LogError("Terrain not found in the scene.");
+        }
+    }
+
+    public void SetTower(Transform towerTransform)
+    {
+        tower = towerTransform;
+        GeneratePathsForTower();
+    }
+
+    public void GeneratePathsForTower()
+    {
+        if (tower == null)
+        {
+            Debug.LogWarning("Tower is not set.");
+            return;
+        }
+
+        Vector3[] spawnPoints = GenerateSpawnPoints();
+        foreach (Vector3 spawn in spawnPoints)
+        {
+            List<Vector3> path = GeneratePath(spawn);
+            VisualizePath(path);  // Optional visualization for debugging
+        }
+    }
+
+    public Vector3[] GenerateSpawnPoints()
+    {
+        float terrainWidth = terrain.terrainData.size.x;
+        float terrainHeight = terrain.terrainData.size.z;
+
+        Vector3[] points = new Vector3[numberOfSpawnPoints];
+        for (int i = 0; i < numberOfSpawnPoints; i++)
+        {
+            bool isEdgeX = UnityEngine.Random.value > 0.5f;
+            bool isEdgeZ = UnityEngine.Random.value > 0.5f;
+
+            float x = isEdgeX ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainWidth - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainWidth - edgeMargin);
+            float z = isEdgeZ ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainHeight - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainHeight - edgeMargin);
+
+            points[i] = new Vector3(x, 0, z);
+        }
+
+        return points;
+    }
+
+    public List<Vector3> GeneratePath(Vector3 spawnPoint)
+    {
+        List<Vector3> path = new List<Vector3>();
+
+        if (tower != null)
+        {
+            path.Add(spawnPoint);
+            path.Add(tower.position);
+
+            // Debug output
+            Debug.Log($"Generated path: {string.Join(" -> ", path.Select(p => p.ToString()))}");
+        }
+        else
+        {
+            Debug.LogError("Tower is not assigned. Cannot generate path.");
         }
 
         return path;
     }
 
-    void VisualizePath(List<Vector3> path)
+    private void VisualizePath(List<Vector3> path)
     {
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Debug.DrawLine(path[i], path[i + 1], Color.red, 30f);
+            Debug.DrawLine(path[i], path[i + 1], Color.red, 10f);
         }
     }
+
 
 }
