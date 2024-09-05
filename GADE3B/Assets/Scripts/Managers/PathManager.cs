@@ -471,32 +471,49 @@ public class PathManager : MonoBehaviour
     }*/
 
     public Terrain terrain;
+    public GameObject defenderPlacementMarkerPrefab; // Prefab to indicate placement positions on the terrain
     public int numberOfSpawnPoints = 5;
-    public float edgeMargin = 10f;  // Margin from the edge of the terrain
-    public float minimumDistanceFromTower = 10f;  // Minimum distance from the tower to place spawn points
+    public float edgeMargin = 5f;
+    public float minimumDistanceFromTower = 10f;
+    public float defenderPlacementRadius = 5f;
 
-    private Transform tower;  // Reference to the tower's position
+    public List<Vector3> defenderPositions = new List<Vector3>(); // List to store defender positions
+    private Transform tower;
     private Vector3[] spawnPoints;
-
-    
-    public float defenderPlacementRadius = 5f;  // Adjust this value to define how close defenders block spawn points
-
-    public List<Vector3> defenderPositions = new List<Vector3>();
-
-    public void AddDefenderPosition(Vector3 position)
-    {
-        defenderPositions.Add(position);
-        Debug.Log($"Added defender at position {position}");
-    }
-
 
     private void Start()
     {
-        terrain = Terrain.activeTerrain;  // Automatically find the terrain if not assigned
+        terrain = Terrain.activeTerrain;
+
         if (terrain == null)
         {
             Debug.LogError("Terrain not found in the scene.");
             return;
+        }
+
+        // Start waiting for NavMesh
+        StartCoroutine(WaitForNavMesh());
+
+        // Predefine at least 4 defender positions on the terrain
+        PopulateDefenderPositions();
+
+        // Visualize the defender positions
+        VisualizeDefenderPositions();
+    }
+
+    private IEnumerator WaitForNavMesh()
+    {
+        TerrainGenerator terrainGenerator = FindObjectOfType<TerrainGenerator>();
+
+        if (terrainGenerator == null)
+        {
+            Debug.LogError("TerrainGenerator not found in the scene.");
+            yield break;
+        }
+
+        while (!terrainGenerator.IsNavMeshReady())
+        {
+            yield return null;
         }
 
         GeneratePathsForTower();
@@ -520,8 +537,56 @@ public class PathManager : MonoBehaviour
         foreach (Vector3 spawn in spawnPoints)
         {
             List<Vector3> path = GeneratePath(spawn);
-            VisualizePath(path);  // Optional visualization for debugging
+            VisualizePath(path);
         }
+    }
+
+    // Method to add a new defender position dynamically
+    public void AddDefenderPosition(Vector3 position)
+    {
+        if (!defenderPositions.Contains(position))
+        {
+            defenderPositions.Add(position);
+            Debug.Log($"Added defender at position {position}");
+            // Optionally visualize the new defender position
+            if (defenderPlacementMarkerPrefab != null)
+            {
+                Instantiate(defenderPlacementMarkerPrefab, position, Quaternion.identity);
+            }
+        }
+        else
+        {
+            Debug.Log($"Position {position} already exists in defender positions.");
+        }
+    }
+
+    private void PopulateDefenderPositions()
+    {
+        // Define at least 4 fixed positions for defenders on the terrain
+        defenderPositions.Add(new Vector3(100, terrain.SampleHeight(new Vector3(100, 0, 100)), 100));
+        defenderPositions.Add(new Vector3(150, terrain.SampleHeight(new Vector3(150, 0, 150)), 150));
+        defenderPositions.Add(new Vector3(200, terrain.SampleHeight(new Vector3(200, 0, 200)), 200));
+        defenderPositions.Add(new Vector3(50, terrain.SampleHeight(new Vector3(50, 0, 50)), 50));
+
+        Debug.Log("Defender positions populated.");
+    }
+
+    private void VisualizeDefenderPositions()
+    {
+        // Visualize each defender position with a marker
+        foreach (Vector3 position in defenderPositions)
+        {
+            if (defenderPlacementMarkerPrefab != null)
+            {
+                Instantiate(defenderPlacementMarkerPrefab, position, Quaternion.identity);
+            }
+            else
+            {
+                Debug.LogError("Defender placement marker prefab is missing.");
+            }
+        }
+
+        Debug.Log("Defender positions visualized.");
     }
 
     public Vector3[] GenerateSpawnPoints()
@@ -530,11 +595,11 @@ public class PathManager : MonoBehaviour
         float terrainHeight = terrain.terrainData.size.z;
 
         Vector3[] points = new Vector3[numberOfSpawnPoints];
-        int maxAttempts = 100;  // Maximum number of attempts to find a valid spawn point
+        int maxAttempts = 100;
 
         for (int i = 0; i < numberOfSpawnPoints; i++)
         {
-            Vector3 spawnPoint = Vector3.zero;  // Initialize the variable
+            Vector3 spawnPoint = Vector3.zero;
             bool validPoint = false;
             int attempts = 0;
 
@@ -542,7 +607,6 @@ public class PathManager : MonoBehaviour
             {
                 attempts++;
 
-                // Choose a random edge location
                 bool isEdgeX = UnityEngine.Random.value > 0.5f;
                 bool isEdgeZ = UnityEngine.Random.value > 0.5f;
 
@@ -552,8 +616,7 @@ public class PathManager : MonoBehaviour
                 spawnPoint = new Vector3(x, 0, z);
                 spawnPoint.y = terrain.SampleHeight(spawnPoint);
 
-                // Increase the search radius for NavMesh.SamplePosition
-                float searchRadius = 10f; // Increase this value from edgeMargin for better results
+                float searchRadius = 100f;
                 NavMeshHit hit;
                 bool isOnNavMesh = NavMesh.SamplePosition(spawnPoint, out hit, searchRadius, NavMesh.AllAreas);
 
@@ -563,16 +626,7 @@ public class PathManager : MonoBehaviour
                     continue;
                 }
 
-                if (tower != null)
-                {
-                    validPoint = Vector3.Distance(hit.position, tower.position) >= minimumDistanceFromTower && !IsPointBlockedByDefender(hit.position);
-                }
-                else
-                {
-                    validPoint = !IsPointBlockedByDefender(hit.position);
-                }
-
-                Debug.Log($"Checking spawn point {spawnPoint}: No tower, Valid: {validPoint}");
+                validPoint = Vector3.Distance(hit.position, tower.position) >= minimumDistanceFromTower && !IsPointBlockedByDefender(hit.position);
 
                 if (!validPoint)
                 {
@@ -593,7 +647,6 @@ public class PathManager : MonoBehaviour
 
         return points;
     }
-
 
     public List<Vector3> GeneratePath(Vector3 spawnPoint)
     {
@@ -632,16 +685,13 @@ public class PathManager : MonoBehaviour
 
     private bool IsPointBlockedByDefender(Vector3 point)
     {
-        // Assuming you have a list of defender positions that should block spawn points
         foreach (Vector3 defenderPosition in defenderPositions)
         {
             if (Vector3.Distance(point, defenderPosition) < defenderPlacementRadius)
             {
-                return true;  // Blocked by a defender
+                return true;
             }
         }
-        return false;  // Not blocked
+        return false;
     }
-
-
 }

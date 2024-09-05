@@ -91,34 +91,22 @@ public class DefenderPlacementManager : MonoBehaviour
         currentDefender = null; // Ready for the next placement
     }
     */
-
-
     public GameObject defenderPrefab; // Set this in the inspector
     public LayerMask terrainLayer; // Set the terrain layer in the inspector
     public Camera mainCamera; // Reference to the main camera
     public GoldManager gameManager; // Reference to the GameManager which controls the gold
+    public TerrainGenerator terrainGenerator; // Reference to the TerrainGenerator to rebake NavMesh
+    public PathManager pathManager; // Reference to the PathManager for predetermined positions
+    public float placementThreshold = 2.0f; // Max distance from a valid position to allow placement
     public bool isPlacing = false; // Track whether we're in placement mode
-
-    private GameObject currentDefender;
 
     void Update()
     {
         if (isPlacing)
         {
-            if (Input.GetMouseButtonDown(0) && currentDefender == null) // Left mouse button
+            if (Input.GetMouseButtonDown(0)) // Left mouse button
             {
-
-                StartPlacingDefender();
-
-            }
-            else if (Input.GetMouseButtonDown(1) && currentDefender != null) // Right mouse button to confirm placement
-            {
-                ConfirmPlacement();
-            }
-
-            if (currentDefender != null)
-            {
-                MoveDefenderToCursor();
+                TryPlaceDefender();
             }
         }
     }
@@ -127,78 +115,87 @@ public class DefenderPlacementManager : MonoBehaviour
     {
         isPlacing = toggle;
         Time.timeScale = isPlacing ? 0.1f : 1.0f; // Slow down time when in placement mode
-
-        if (!isPlacing && currentDefender != null)
-        {
-            // If exiting placement mode and cannot afford another defender, keep the last placed defender
-            currentDefender = null; // This avoids deleting it but stops further interaction
-        }
     }
 
-    private void StartPlacingDefender()
+    private void TryPlaceDefender()
     {
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, terrainLayer))
         {
             Vector3 spawnPosition = hit.point;
-            spawnPosition.y += 0.5f; // Adjust height if necessary
-            currentDefender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
-        }
-    }
 
-    private void ConfirmPlacement()
-    {
-        if (currentDefender != null)
-        {
-            gameManager.SpendGold(5); // Spend gold to confirm placement
-
-            // Add NavMeshObstacle to the defender to block enemy paths
-            NavMeshObstacle navObstacle = currentDefender.AddComponent<NavMeshObstacle>();
-            navObstacle.carving = true; // Enable carving for dynamic obstacle avoidance
-
-            // Notify the PathManager about the new defender position
-            PathManager pathManager = FindObjectOfType<PathManager>(); // Find the PathManager instance
-            if (pathManager != null)
+            // Check if the spawn position is near any valid defender positions
+            if (IsValidDefenderPosition(spawnPosition))
             {
-                pathManager.AddDefenderPosition(currentDefender.transform.position);
+                PlaceDefenderAtPosition(spawnPosition);
             }
             else
             {
-                Debug.LogError("PathManager not found.");
+                Debug.LogError("Invalid defender placement position. Must be near a predetermined location.");
             }
-
-            currentDefender = null; // Placement is confirmed
-        }
-    }
-
-    private void MoveDefenderToCursor()
-    {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, terrainLayer))
-        {
-            Vector3 newPosition = hit.point;
-
-            // Get the exact height from the terrain at the hit point (if using terrain)
-            // This ensures the defender stays on the terrain
-            Terrain activeTerrain = Terrain.activeTerrain;
-            if (activeTerrain != null)
-            {
-                float terrainHeight = activeTerrain.SampleHeight(newPosition);
-                newPosition.y = terrainHeight; // Set defender's Y position to match terrain height
-            }
-            else
-            {
-                newPosition.y += 0.5f; // Adjust if not using Terrain system
-            }
-
-            currentDefender.transform.position = newPosition;
         }
         else
         {
             Debug.LogError("Raycast did not hit the terrain layer. Check layer settings.");
+        }
+    }
+
+    private bool IsValidDefenderPosition(Vector3 position)
+    {
+        if (pathManager == null)
+        {
+            Debug.LogError("PathManager reference is missing.");
+            return false;
+        }
+
+        foreach (Vector3 defenderPosition in pathManager.defenderPositions)
+        {
+            if (Vector3.Distance(position, defenderPosition) <= placementThreshold)
+            {
+                return true;
+            }
+        }
+
+        return false; // Not close enough to a valid defender position
+    }
+
+    private void PlaceDefenderAtPosition(Vector3 spawnPosition)
+    {
+        spawnPosition.y += 0.5f; // Adjust height if necessary
+        GameObject defender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
+
+        // Spend gold to confirm placement
+        if (gameManager.SpendGold(5))
+        {
+            // Add NavMeshObstacle if it doesn't already exist
+            if (!defender.GetComponent<NavMeshObstacle>())
+            {
+                NavMeshObstacle navObstacle = defender.AddComponent<NavMeshObstacle>();
+                navObstacle.carving = true; // Enable carving for dynamic obstacle avoidance
+            }
+
+            // Notify the PathManager about the new defender position
+            pathManager.AddDefenderPosition(defender.transform.position);
+
+            // Trigger NavMesh rebake after defender placement
+            if (terrainGenerator != null)
+            {
+                terrainGenerator.ReBakeNavMesh();  // Re-bake the NavMesh to include the defender
+                Debug.Log("NavMesh re-baked after defender placement.");
+            }
+            else
+            {
+                Debug.LogError("TerrainGenerator reference is missing.");
+            }
+
+            // Allow placement of more defenders if there is enough gold
+            isPlacing = true; // Keep placement mode active
+            Time.timeScale = 0.1f; // Keep the slowed-down time active for more placements
+        }
+        else
+        {
+            Debug.LogError("Not enough gold to place the defender.");
         }
     }
 }

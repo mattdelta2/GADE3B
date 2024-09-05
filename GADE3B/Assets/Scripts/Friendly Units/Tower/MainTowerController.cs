@@ -186,6 +186,7 @@ public class MainTowerController : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"Tower starting position: {transform.position}");
         // Ensure that references are set
         if (pathManager == null)
         {

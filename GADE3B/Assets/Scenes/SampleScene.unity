@@ -288,11 +288,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs:
   - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
+  - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   terrain: {fileID: 1106253521}
-  mainTowerController: {fileID: 280079537}
-  spawnInterval: 5
+  mainTowerController: {fileID: 0}
+  spawnInterval: 2
   pathManager: {fileID: 1975598647}
-  terrainGenerator: {fileID: 0}
+  terrainGenerator: {fileID: 1544179510}
 --- !u!4 &174013545
 Transform:
   m_ObjectHideFlags: 0
@@ -300,58 +301,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 174013543}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &280079536
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 280079538}
-  - component: {fileID: 280079537}
-  m_Layer: 0
-  m_Name: MainTower
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &280079537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 280079536}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62e8d455d7db5e64c9e58cd7433dcc01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathManager: {fileID: 1975598647}
-  enemySpawner: {fileID: 174013544}
-  terrain: {fileID: 1106253521}
-  projectilePrefab: {fileID: 7713831968730646808, guid: ee39de88fb575ac48b41316901667222, type: 3}
-  shootingRange: 10
-  damage: 10
-  shootingInterval: 1
-  health: 100
---- !u!4 &280079538
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 280079536}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -391,7 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pathLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1
 --- !u!4 &643516135
 Transform:
   m_ObjectHideFlags: 0
@@ -857,9 +806,9 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
-  m_GenerateLinks: 0
+  m_GenerateLinks: 1
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
@@ -868,7 +817,7 @@ MonoBehaviour:
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
-  m_BuildHeightMesh: 0
+  m_BuildHeightMesh: 1
 --- !u!1 &1399855211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1040,6 +989,7 @@ MonoBehaviour:
   terrain: {fileID: 1106253521}
   projectilePrefab: {fileID: 7713831968730646808, guid: ee39de88fb575ac48b41316901667222, type: 3}
   cameraController: {fileID: 963194229}
+  terrainGenerator: {fileID: 1544179510}
 --- !u!4 &1450549543
 Transform:
   m_ObjectHideFlags: 0
@@ -1169,6 +1119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1544179511}
   - component: {fileID: 1544179510}
+  - component: {fileID: 1544179512}
   m_Layer: 0
   m_Name: TerrainGenerator
   m_TagString: Untagged
@@ -1189,7 +1140,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1106253521}
-  navMeshSurface: {fileID: 0}
   width: 256
   depth: 256
   height: 15
@@ -1212,6 +1162,37 @@ Transform:
   - {fileID: 1106253519}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1544179512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544179509}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0
 --- !u!1 &1637312640
 GameObject:
   m_ObjectHideFlags: 0
@@ -1511,11 +1492,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1106253521}
+  defenderPlacementMarkerPrefab: {fileID: 509266712699559402, guid: 93a71697d1523c940ba2ba0d2e0b9f18, type: 3}
   numberOfSpawnPoints: 10
   edgeMargin: 20
   minimumDistanceFromTower: 60
-  defenderPlacementRadius: 1
-  defenderPositions: []
+  defenderPlacementRadius: 15
+  defenderPositions:
+  - {x: 0, y: 0, z: 0}
 --- !u!4 &1975598648
 Transform:
   m_ObjectHideFlags: 0
@@ -1566,6 +1549,9 @@ MonoBehaviour:
     m_Bits: 1
   mainCamera: {fileID: 963194227}
   gameManager: {fileID: 2079669606}
+  terrainGenerator: {fileID: 1544179510}
+  pathManager: {fileID: 1975598647}
+  placementThreshold: 2
   isPlacing: 0
 --- !u!4 &1987939576
 Transform:
@@ -1759,7 +1745,6 @@ SceneRoots:
   - {fileID: 2128946095}
   - {fileID: 643516135}
   - {fileID: 174013545}
-  - {fileID: 280079538}
   - {fileID: 1450549543}
   - {fileID: 1987939576}
   - {fileID: 1453669330}

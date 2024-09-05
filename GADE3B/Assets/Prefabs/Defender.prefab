@@ -115,6 +115,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6815271139789447356}
   - component: {fileID: -6377319813243936778}
+  - component: {fileID: 2026137672002777959}
   m_Layer: 0
   m_Name: Defender
   m_TagString: Untagged
@@ -155,3 +156,19 @@ MonoBehaviour:
   shootingInterval: 2.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
+--- !u!208 &2026137672002777959
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5417088069048846218}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
