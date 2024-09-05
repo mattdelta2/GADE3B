@@ -544,7 +544,7 @@ public class PathManager : MonoBehaviour
     // Method to add a new defender position dynamically
     public void AddDefenderPosition(Vector3 position)
     {
-        if (!defenderPositions.Contains(position))
+        if (!defenderPositions.Contains(position) && !IsPointBlockedByDefender(position))
         {
             defenderPositions.Add(position);
             Debug.Log($"Added defender at position {position}");
@@ -556,7 +556,7 @@ public class PathManager : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Position {position} already exists in defender positions.");
+            Debug.Log($"Position {position} is either blocked or already exists.");
         }
     }
 
@@ -693,5 +693,26 @@ public class PathManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private bool IsPointOnEnemyPath(Vector3 point)
+    {
+        foreach (Vector3 spawn in spawnPoints)
+        {
+            List<Vector3> path = GeneratePath(spawn);
+            foreach (Vector3 pathPoint in path)
+            {
+                if (Vector3.Distance(point, pathPoint) < defenderPlacementRadius)
+                {
+                    return true;  // Point is too close to an enemy path
+                }
+            }
+        }
+        return false;  // Point is not on an enemy path
+    }
+
+    private bool CanPlaceDefender(Vector3 point)
+    {
+        return !IsPointBlockedByDefender(point) && !IsPointOnEnemyPath(point);
     }
 }

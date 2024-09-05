@@ -1142,8 +1142,12 @@ MonoBehaviour:
   terrain: {fileID: 1106253521}
   width: 256
   depth: 256
-  height: 15
+  baseHeight: 10
   scale: 5
+  frequency: 2
+  octaves: 4
+  persistence: 0.5
+  lacunarity: 2
   offsetX: 100
   offsetZ: 100
 --- !u!4 &1544179511
@@ -1495,8 +1499,8 @@ MonoBehaviour:
   defenderPlacementMarkerPrefab: {fileID: 509266712699559402, guid: 93a71697d1523c940ba2ba0d2e0b9f18, type: 3}
   numberOfSpawnPoints: 10
   edgeMargin: 20
-  minimumDistanceFromTower: 60
-  defenderPlacementRadius: 15
+  minimumDistanceFromTower: 35
+  defenderPlacementRadius: 5
   defenderPositions:
   - {x: 0, y: 0, z: 0}
 --- !u!4 &1975598648
