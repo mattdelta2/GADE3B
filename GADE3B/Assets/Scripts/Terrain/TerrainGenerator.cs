@@ -1,23 +1,22 @@
 using UnityEngine;
-using UnityEngine.AI; // Import NavMesh functionality
+using UnityEngine.AI;  // Import NavMesh functionality
 
 public class TerrainGenerator : MonoBehaviour
 {
-    // Public field to assign the Terrain object from the Inspector
-    public Terrain terrain;
-
-    // Reference to the NavMeshSurface component
-    public NavMeshSurface navMeshSurface;
+    public Terrain terrain;  // Public field to assign the Terrain object
+    public NavMeshSurface navMeshSurface;  // Reference to the NavMeshSurface component
 
     // Terrain settings
     public int width = 256;
     public int depth = 256;
     public int height;
-    public float scale; // Scale of the noise
+    public float scale;  // Scale of the noise
 
     // Offsets for randomizing terrain
     public float offsetX = 100f;
     public float offsetZ = 100f;
+
+    private bool navMeshReady = false;  // Flag to indicate if the NavMesh is baked and ready
 
     void Start()
     {
@@ -122,5 +121,12 @@ public class TerrainGenerator : MonoBehaviour
         Debug.Log("Baking NavMesh...");
         navMeshSurface.BuildNavMesh();  // Build the NavMesh
         Debug.Log("NavMesh baked successfully.");
+        navMeshReady = true;  // Set flag to indicate that the NavMesh is ready
+    }
+
+    // Public method to check if the NavMesh is ready
+    public bool IsNavMeshReady()
+    {
+        return navMeshReady;
     }
 }

@@ -157,6 +157,17 @@ public class DefenderPlacementManager : MonoBehaviour
             NavMeshObstacle navObstacle = currentDefender.AddComponent<NavMeshObstacle>();
             navObstacle.carving = true; // Enable carving for dynamic obstacle avoidance
 
+            // Notify the PathManager about the new defender position
+            PathManager pathManager = FindObjectOfType<PathManager>(); // Find the PathManager instance
+            if (pathManager != null)
+            {
+                pathManager.AddDefenderPosition(currentDefender.transform.position);
+            }
+            else
+            {
+                Debug.LogError("PathManager not found.");
+            }
+
             currentDefender = null; // Placement is confirmed
         }
     }

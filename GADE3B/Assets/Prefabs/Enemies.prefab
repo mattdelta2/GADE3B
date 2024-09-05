@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -1915537316807459268}
   - component: {fileID: -4735756282337569122}
   - component: {fileID: 5874080622208353419}
-  - component: {fileID: 3298243051350073337}
+  - component: {fileID: -4602595389221618645}
   m_Layer: 0
   m_Name: Enemies
   m_TagString: Enemy
@@ -99,7 +99,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!195 &3298243051350073337
+--- !u!195 &-4602595389221618645
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,12 +114,12 @@ NavMeshAgent:
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
+  m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
-  m_AutoRepath: 1
+  m_AutoRepath: 0
   m_Height: 2
   m_BaseOffset: 0
-  m_WalkableMask: 1
+  m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!1 &5363252220778847642
 GameObject:

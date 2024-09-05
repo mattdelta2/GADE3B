@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class TowerPlacementController : MonoBehaviour
 {
@@ -20,25 +21,35 @@ public class TowerPlacementController : MonoBehaviour
             Vector3 worldPosition = GetWorldPositionFromMouse();
             if (towerPlacement.CanPlaceTower(worldPosition))
             {
-                // Place the main tower
+                // Get the terrain height
                 Vector3 terrainPosition = new Vector3(worldPosition.x, terrain.SampleHeight(worldPosition), worldPosition.z);
-                placedTower = Instantiate(mainTowerPrefab, terrainPosition, Quaternion.identity);
-                canPlaceMainTower = false;  // Prevent further placement
 
-                // Notify PathManager to generate paths
-                if (pathManager != null && placedTower != null)
+                // Ensure tower is placed on the NavMesh
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(terrainPosition, out hit, 5f, NavMesh.AllAreas))
                 {
-                    pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
+                    placedTower = Instantiate(mainTowerPrefab, hit.position, Quaternion.identity);
+                    canPlaceMainTower = false;
+
+                    // Notify PathManager to generate paths
+                    if (pathManager != null && placedTower != null)
+                    {
+                        pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
+                    }
+                    else
+                    {
+                        Debug.LogError("PathManager or placedTower is null.");
+                    }
+
+                    // Notify EnemySpawner to start spawning enemies
+                    if (enemySpawner != null)
+                    {
+                        enemySpawner.StartSpawning(); // Start enemy spawning
+                    }
                 }
                 else
                 {
-                    Debug.LogError("PathManager or placedTower is null.");
-                }
-
-                // Notify EnemySpawner to start spawning enemies
-                if (enemySpawner != null)
-                {
-                    enemySpawner.StartSpawning(); // Start enemy spawning
+                    Debug.LogError("Cannot place tower, invalid NavMesh position.");
                 }
             }
             else

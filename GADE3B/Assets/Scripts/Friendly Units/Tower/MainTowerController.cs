@@ -221,16 +221,17 @@ public class MainTowerController : MonoBehaviour
     private void ShootAtEnemies()
     {
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, shootingRange);
-
         bool shooting = false;  // Flag to check if any enemies are hit
 
         foreach (Collider enemyCollider in hitEnemies)
         {
-            if (enemyCollider.CompareTag("Enemy")) // Correctly using CompareTag to check the tag
+            if (enemyCollider.CompareTag("Enemy"))  // Ensure the collider is an enemy
             {
                 shooting = true;  // Set flag to true if an enemy is hit
-                                  // Example projectile launch
+
+                // Example projectile launch, but limit the number of projectiles
                 LaunchProjectile(enemyCollider.transform);
+                break; // Fire only one projectile per interval to avoid overwhelming the system
             }
         }
 
@@ -258,7 +259,7 @@ public class MainTowerController : MonoBehaviour
     // Call this method to apply damage to the tower
 
 
-     public void TakeDamage(float damageAmount)
+    public void TakeDamage(float damageAmount)
     {
         health -= damageAmount;
         if (health <= 0)
