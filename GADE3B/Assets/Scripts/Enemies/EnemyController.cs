@@ -366,19 +366,7 @@ public class EnemyController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // Handle interactions with other enemies
-        if (other.CompareTag("Enemy"))
-        {
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damageAmount);
-                Destroy(gameObject); // Destroy the enemy upon collision
-            }
-        }
-    }
+
 
     // Helper method to check if the enemy is dead
     public bool IsDead()

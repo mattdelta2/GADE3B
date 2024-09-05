@@ -288,10 +288,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs:
   - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
-  - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   terrain: {fileID: 1106253521}
   mainTowerController: {fileID: 0}
-  spawnInterval: 2
+  spawnInterval: 1
   pathManager: {fileID: 1975598647}
   terrainGenerator: {fileID: 1544179510}
 --- !u!4 &174013545
@@ -1142,12 +1141,8 @@ MonoBehaviour:
   terrain: {fileID: 1106253521}
   width: 256
   depth: 256
-  baseHeight: 10
+  height: 0
   scale: 5
-  frequency: 2
-  octaves: 4
-  persistence: 0.5
-  lacunarity: 2
   offsetX: 100
   offsetZ: 100
 --- !u!4 &1544179511
