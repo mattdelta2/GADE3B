@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.AI; 
 public class EnemyManager : MonoBehaviour
 {
     public List<GameObject> enemyPrefabs; // List to hold different enemy prefabs
@@ -17,8 +17,8 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    // Method to spawn an enemy at a given position with a specified path
-    public void SpawnEnemy(Vector3 spawnPosition, List<Vector3> path)
+    // Method to spawn an enemy at a given position
+    public void SpawnEnemy(Vector3 spawnPosition)
     {
         if (enemyPrefabs.Count == 0)
         {
@@ -33,9 +33,18 @@ public class EnemyManager : MonoBehaviour
         EnemyController enemyController = enemyInstance.GetComponent<EnemyController>();
         if (enemyController != null)
         {
-            enemyController.SetPath(path);
-            enemyController.tower = tower; // Assign the tower to the enemy
+            // Assign the tower to the enemy
+            enemyController.tower = tower;
 
+            // Get the NavMeshAgent component
+            NavMeshAgent agent = enemyInstance.GetComponent<NavMeshAgent>();
+            if (agent != null && tower != null)
+            {
+                // Set the destination to the tower
+                agent.SetDestination(tower.position);
+            }
+
+            // Add the enemy to the list of active enemies
             activeEnemies.Add(enemyController);
         }
         else

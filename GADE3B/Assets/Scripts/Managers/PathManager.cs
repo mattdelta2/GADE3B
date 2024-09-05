@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.AI;
 
 public class PathManager : MonoBehaviour
 {/*
@@ -472,8 +473,10 @@ public class PathManager : MonoBehaviour
     public Terrain terrain;
     public int numberOfSpawnPoints = 5;
     public float edgeMargin = 10f;  // Margin from the edge of the terrain
+    public float minimumDistanceFromTower = 10f;  // Minimum distance from the tower to place spawn points
 
     private Transform tower;  // Reference to the tower's position
+    private Vector3[] spawnPoints;
 
     private void Start()
     {
@@ -481,7 +484,10 @@ public class PathManager : MonoBehaviour
         if (terrain == null)
         {
             Debug.LogError("Terrain not found in the scene.");
+            return;
         }
+
+        GeneratePathsForTower();
     }
 
     public void SetTower(Transform towerTransform)
@@ -498,7 +504,7 @@ public class PathManager : MonoBehaviour
             return;
         }
 
-        Vector3[] spawnPoints = GenerateSpawnPoints();
+        spawnPoints = GenerateSpawnPoints();
         foreach (Vector3 spawn in spawnPoints)
         {
             List<Vector3> path = GeneratePath(spawn);
@@ -514,13 +520,38 @@ public class PathManager : MonoBehaviour
         Vector3[] points = new Vector3[numberOfSpawnPoints];
         for (int i = 0; i < numberOfSpawnPoints; i++)
         {
-            bool isEdgeX = UnityEngine.Random.value > 0.5f;
-            bool isEdgeZ = UnityEngine.Random.value > 0.5f;
+            Vector3 spawnPoint = Vector3.zero;  // Initialize the variable
 
-            float x = isEdgeX ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainWidth - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainWidth - edgeMargin);
-            float z = isEdgeZ ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainHeight - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainHeight - edgeMargin);
+            bool validPoint = false;
+            while (!validPoint)
+            {
+                // Choose a random edge location
+                bool isEdgeX = UnityEngine.Random.value > 0.5f;
+                bool isEdgeZ = UnityEngine.Random.value > 0.5f;
 
-            points[i] = new Vector3(x, 0, z);
+                float x = isEdgeX ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainWidth - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainWidth - edgeMargin);
+                float z = isEdgeZ ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainHeight - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainHeight - edgeMargin);
+
+                spawnPoint = new Vector3(x, 0, z);
+                spawnPoint.y = terrain.SampleHeight(spawnPoint);
+
+                // Check if the point is on the NavMesh
+                NavMeshHit hit;
+                bool isOnNavMesh = NavMesh.SamplePosition(spawnPoint, out hit, edgeMargin, NavMesh.AllAreas);
+                spawnPoint = hit.position;
+
+                // Check if the point is at least `minimumDistanceFromTower` away from the tower
+                if (tower != null)
+                {
+                    validPoint = isOnNavMesh && Vector3.Distance(spawnPoint, tower.position) >= minimumDistanceFromTower;
+                }
+                else
+                {
+                    validPoint = isOnNavMesh;  // No tower to check distance from
+                }
+            }
+
+            points[i] = spawnPoint;
         }
 
         return points;
@@ -532,11 +563,34 @@ public class PathManager : MonoBehaviour
 
         if (tower != null)
         {
-            path.Add(spawnPoint);
-            path.Add(tower.position);
+            NavMeshPath navMeshPath = new NavMeshPath();
 
-            // Debug output
-            Debug.Log($"Generated path: {string.Join(" -> ", path.Select(p => p.ToString()))}");
+            // Check if spawn point and tower position are on the NavMesh
+            NavMeshHit startHit, endHit;
+            if (!NavMesh.SamplePosition(spawnPoint, out startHit, 1.0f, NavMesh.AllAreas))
+            {
+                Debug.LogError($"Start point is off the NavMesh: {spawnPoint}");
+                return path;
+            }
+
+            if (!NavMesh.SamplePosition(tower.position, out endHit, 1.0f, NavMesh.AllAreas))
+            {
+                Debug.LogError($"End point is off the NavMesh: {tower.position}");
+                return path;
+            }
+
+            // Calculate the path
+            NavMesh.CalculatePath(startHit.position, endHit.position, NavMesh.AllAreas, navMeshPath);
+
+            if (navMeshPath.status == NavMeshPathStatus.PathComplete)
+            {
+                path.AddRange(navMeshPath.corners);
+                Debug.Log($"Generated path: {string.Join(" -> ", path.Select(p => p.ToString()))}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to generate path. Status: {navMeshPath.status}, Start: {startHit.position}, End: {endHit.position}");
+            }
         }
         else
         {
@@ -553,6 +607,4 @@ public class PathManager : MonoBehaviour
             Debug.DrawLine(path[i], path[i + 1], Color.red, 10f);
         }
     }
-
-
 }

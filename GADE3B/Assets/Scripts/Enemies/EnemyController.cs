@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {/*
@@ -304,59 +305,51 @@ public class EnemyController : MonoBehaviour
 
 
     public float health = 20f; // Initial health of the enemy
-    public float moveSpeed = 5f; // Speed at which the enemy moves
     public float damageAmount = 10f; // Damage amount the enemy will deal to the tower
     public Transform tower; // Reference to the main tower
-    //bool isDead = false;
 
-    private List<Vector3> path;
-    private int currentWaypointIndex = 0;
+    private NavMeshAgent agent; // NavMeshAgent to handle movement and pathfinding
 
     private void Start()
     {
+        // Ensure the tower is assigned
         if (tower == null)
         {
             Debug.LogError("Tower reference is not set.");
         }
-        MainTowerController towerController = tower.GetComponent<MainTowerController>();
+
+        // Get or add a NavMeshAgent component to the enemy
+        agent = GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            agent = gameObject.AddComponent<NavMeshAgent>();
+        }
+
+        // Set the destination to the tower
+        SetDestinationToTower();
     }
 
+    // Set the destination to the tower
+    private void SetDestinationToTower()
+    {
+        if (agent != null && tower != null)
+        {
+            agent.SetDestination(tower.position);
+        }
+    }
+
+    // Update is called once per frame
     private void Update()
     {
-        if (path != null && path.Count > 0)
-        {
-            MoveAlongPath();
-        }
-    }
-
-    public void SetPath(List<Vector3> newPath)
-    {
-        path = newPath;
-        currentWaypointIndex = 0;
-    }
-
-    private void MoveAlongPath()
-    {
-        if (currentWaypointIndex >= path.Count)
-            return;
-
-        Vector3 targetPosition = path[currentWaypointIndex];
-        Vector3 moveDirection = (targetPosition - transform.position).normalized;
-        transform.position += moveDirection * moveSpeed * Time.deltaTime;
-
-        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
-        {
-            currentWaypointIndex++;
-        }
-
         // Check if the enemy has reached the tower
-        if (Vector3.Distance(transform.position, tower.position) < 0.1f)
+        if (agent != null && agent.remainingDistance <= agent.stoppingDistance)
         {
             Debug.Log("Enemy reached the tower.");
-            Die(); // Destroy the enemy
+            Die(); // Destroy the enemy when it reaches the tower
         }
     }
 
+    // Take damage method
     public void TakeDamage(float amount)
     {
         health -= amount;
@@ -366,35 +359,32 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // Handle the enemy's death
     private void Die()
     {
-        // Handle enemy death
+        // Handle enemy death (e.g., destroy enemy, play animation)
         Destroy(gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        // Handle interactions with other enemies
         if (other.CompareTag("Enemy"))
         {
             EnemyController enemy = other.GetComponent<EnemyController>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damageAmount);
-                Destroy(gameObject); // Destroy the projectile
+                Destroy(gameObject); // Destroy the enemy upon collision
             }
         }
     }
 
-   /* private void Die()
+    // Helper method to check if the enemy is dead
+    public bool IsDead()
     {
-        if (isDead) return; // Prevent multiple death processing
-
-        isDead = true;
-        Debug.Log("Enemy died.");
-        Debug.Log("Enemy died.");
-        // Handle enemy death (e.g., destroy enemy, play animation)
-        Destroy(gameObject);
-    }*/
+        return health <= 0;
+    }
 }
 
 

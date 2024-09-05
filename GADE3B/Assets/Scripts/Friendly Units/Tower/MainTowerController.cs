@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainTowerController : MonoBehaviour
 {/*
@@ -179,6 +181,7 @@ public class MainTowerController : MonoBehaviour
 
     public float shootingInterval = 1f; // Time in seconds between each shot
     private float shootingTimer = 0f;  // Timer to keep track of time since last shot
+    public float health = 100f;
 
 
     private void Start()
@@ -253,11 +256,20 @@ public class MainTowerController : MonoBehaviour
     }
 
     // Call this method to apply damage to the tower
-    public void TakeDamage(float damageAmount)
+
+
+     public void TakeDamage(float damageAmount)
     {
-        // Handle damage to the tower here
-        Debug.Log("Tower took damage: " + damageAmount);
-        // Add damage handling logic here, such as reducing health
+        health -= damageAmount;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        SceneManager.LoadScene("EndScene");
     }
 }
 

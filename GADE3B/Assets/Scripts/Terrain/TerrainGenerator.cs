@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEngine.AI; // Import NavMesh functionality
 
 public class TerrainGenerator : MonoBehaviour
 {
     // Public field to assign the Terrain object from the Inspector
     public Terrain terrain;
+
+    // Reference to the NavMeshSurface component
+    public NavMeshSurface navMeshSurface;
 
     // Terrain settings
     public int width = 256;
@@ -23,8 +27,9 @@ public class TerrainGenerator : MonoBehaviour
             terrain = GetComponent<Terrain>();
         }
 
-         height = Random.Range(4, 15);
-         scale = Random.Range(6,20);
+        // Randomize terrain height and scale
+        height = Random.Range(4, 15);
+        scale = Random.Range(6, 20);
 
         // Randomize offsets for unique terrain each time
         offsetX = Random.Range(0f, 9999f);
@@ -32,6 +37,16 @@ public class TerrainGenerator : MonoBehaviour
 
         // Generate and apply the terrain data
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
+
+        // Check if NavMeshSurface is assigned and bake the NavMesh
+        if (navMeshSurface != null)
+        {
+            BakeNavMesh();  // Bake NavMesh after terrain is generated
+        }
+        else
+        {
+            Debug.LogError("NavMeshSurface component is missing.");
+        }
     }
 
     // Generate terrain data based on the heightmap
@@ -99,5 +114,13 @@ public class TerrainGenerator : MonoBehaviour
         }
 
         return heights;
+    }
+
+    // Method to bake the NavMesh after terrain generation
+    private void BakeNavMesh()
+    {
+        Debug.Log("Baking NavMesh...");
+        navMeshSurface.BuildNavMesh();  // Build the NavMesh
+        Debug.Log("NavMesh baked successfully.");
     }
 }
