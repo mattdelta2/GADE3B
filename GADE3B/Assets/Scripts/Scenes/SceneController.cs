@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,4 +17,29 @@ public class MainMenuController : MonoBehaviour
     {
         
     }
+
+
+    void MainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    void Quit()
+    {
+        Application.Quit();
+    }
+
+
+    void Play()
+    {
+        SceneManager.LoadScene("GameScene");
+    }
+
+
+    void EndScreen()
+    {
+        SceneManager.LoadScene("EndScene");
+    }
+
+
 }
