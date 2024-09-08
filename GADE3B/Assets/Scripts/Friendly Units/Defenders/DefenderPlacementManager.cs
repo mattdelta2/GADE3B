@@ -96,7 +96,7 @@ public class DefenderPlacementManager : MonoBehaviour
     public LayerMask terrainLayer; // Set the terrain layer in the inspector
     public Camera mainCamera; // Reference to the main camera
     public GoldManager gameManager; // Reference to the GameManager which controls the gold
-    public TerrainGenerator terrainGenerator; // Reference to the TerrainGenerator to rebake NavMesh
+    public NavMeshSurface navMeshSurface; // Reference to the NavMeshSurface used for full rebaking
     public PathManager pathManager; // Reference to the PathManager for predetermined positions
     public float placementThreshold = 2.0f; // Max distance from a valid position to allow placement
     public bool isPlacing = false; // Track whether we're in placement mode
@@ -163,12 +163,13 @@ public class DefenderPlacementManager : MonoBehaviour
 
     private void PlaceDefenderAtPosition(Vector3 spawnPosition)
     {
-        spawnPosition.y += 0.5f; // Adjust height if necessary
-        GameObject defender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
-
         // Spend gold to confirm placement
-        if (gameManager.SpendGold(5))
+        if (gameManager.SpendGold(5)) // Check if player has enough gold
         {
+            // Only place defender if SpendGold returns true
+            spawnPosition.y += 0.5f; // Adjust height if necessary
+            GameObject defender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
+
             // Add NavMeshObstacle if it doesn't already exist
             if (!defender.GetComponent<NavMeshObstacle>())
             {
@@ -180,20 +181,9 @@ public class DefenderPlacementManager : MonoBehaviour
             pathManager.AddDefenderPosition(defender.transform.position);
 
             // Trigger NavMesh rebake after defender placement
-            if (terrainGenerator != null)
-            {
-                terrainGenerator.ReBakeNavMesh();  // Re-bake the NavMesh to include the defender
-                Debug.Log("NavMesh re-baked after defender placement.");
+            StartCoroutine(RebakeNavMeshAndRecalculatePaths());
 
-                // Notify all enemies to recalculate their paths
-                RecalculateEnemyPaths();
-            }
-            else
-            {
-                Debug.LogError("TerrainGenerator reference is missing.");
-            }
-
-            // Allow placement of more defenders if there is enough gold
+            // Allow placement of more defenders if necessary
             isPlacing = true; // Keep placement mode active
             Time.timeScale = 0.1f; // Keep the slowed-down time active for more placements
         }
@@ -203,14 +193,33 @@ public class DefenderPlacementManager : MonoBehaviour
         }
     }
 
+    private IEnumerator RebakeNavMeshAndRecalculatePaths()
+    {
+        // Trigger the full NavMesh rebake
+        if (navMeshSurface != null)
+        {
+            navMeshSurface.BuildNavMesh(); // Rebake the entire NavMesh
+            Debug.Log("NavMesh re-baked after defender placement.");
+        }
+
+        // Delay to ensure the NavMesh is fully updated before recalculating paths
+        yield return new WaitForSecondsRealtime(0.1f); // Small delay to allow NavMesh update to complete
+
+        // Notify all enemies to recalculate their paths
+        RecalculateEnemyPaths();
+    }
+
     private void RecalculateEnemyPaths()
     {
         // Find all active enemies and recalculate their paths
         EnemyController[] enemies = FindObjectsOfType<EnemyController>();
         foreach (EnemyController enemy in enemies)
         {
-            enemy.RecalculatePath(); // Ask enemies to recalculate their path
+            if (enemy != null)
+            {
+                enemy.RecalculatePath(); // Ask enemies to recalculate their path
+                Debug.Log("Enemy recalculated path: " + enemy.name);
+            }
         }
-        Debug.Log("All enemies recalculated their paths after NavMesh rebake.");
     }
 }

@@ -158,6 +158,8 @@ MonoBehaviour:
   shootingInterval: 2.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 16
+  maxHealth: 50
+  healthBarPrefab: {fileID: 819151322862545898, guid: d2efdd4ce47c1104ba4793c73695744c, type: 3}
   target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   shootProjectile: {fileID: 0}
 --- !u!208 &2026137672002777959
@@ -173,7 +175,7 @@ NavMeshObstacle:
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}
   m_MoveThreshold: 0.1
   m_Carve: 1
-  m_CarveOnlyStationary: 1
+  m_CarveOnlyStationary: 0
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
 --- !u!65 &276676660820172426

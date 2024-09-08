@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DefenderController : MonoBehaviour
 {
@@ -10,16 +11,24 @@ public class DefenderController : MonoBehaviour
     public GameObject projectilePrefab; // Projectile prefab to be shot at enemies
 
     public float health = 50f; // Health of the defender
+    public float maxHealth = 50f; // Max health for health bar
+    public GameObject healthBarPrefab; // Health bar prefab
+    private GameObject healthBar; // Instance of the health bar
+    private Slider healthBarSlider; // Reference to the slider component
 
     private float shootingTimer = 0f;
     public Transform target; // Current enemy target
     public Transform shootProjectile;
 
-
     private void Start()
     {
         shootProjectile = transform.Find("shootProjectile");
 
+        // Instantiate the health bar and set its max health
+        healthBar = Instantiate(healthBarPrefab, transform.position + Vector3.up * 2, Quaternion.identity, transform);
+        healthBarSlider = healthBar.GetComponentInChildren<Slider>();
+        healthBarSlider.maxValue = maxHealth;
+        healthBarSlider.value = health;
     }
 
     private void Update()
@@ -32,6 +41,12 @@ public class DefenderController : MonoBehaviour
         }
 
         FindClosestEnemy(); // Continuously search for enemies
+
+        // Update health bar position to stay above the defender
+        if (healthBar != null)
+        {
+            healthBar.transform.position = transform.position + Vector3.up * 2;
+        }
     }
 
     // Method to shoot at an enemy
@@ -76,6 +91,7 @@ public class DefenderController : MonoBehaviour
     public void TakeDamage(float amount)
     {
         health -= amount;
+        healthBarSlider.value = health; // Update health bar when taking damage
         if (health <= 0)
         {
             Die();
@@ -85,7 +101,7 @@ public class DefenderController : MonoBehaviour
     // Method to handle defender's death
     private void Die()
     {
-       
+        Destroy(healthBar); // Destroy the health bar when the defender dies
         Destroy(gameObject); // Destroy the defender when health reaches zero
     }
 }

@@ -43,9 +43,14 @@ public class GoldManager : MonoBehaviour
         {
             currentGold -= amount;
             UpdateGoldDisplay();
+            Debug.Log("Gold spent: " + amount);
             return true;
         }
-        return false;
+        else
+        {
+            Debug.LogWarning("Not enough gold. Current gold: " + currentGold);
+            return false;
+        }
     }
 
     void UpdateGoldDisplay()

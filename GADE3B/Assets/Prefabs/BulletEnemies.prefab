@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4169295697284026370}
   - component: {fileID: 9063985174981039667}
   - component: {fileID: 1234582563845035285}
-  - component: {fileID: 3593642787655183416}
+  - component: {fileID: 6354642832139179775}
   m_Layer: 0
   m_Name: BulletEnemies
   m_TagString: Untagged
@@ -135,7 +135,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!114 &3593642787655183416
+--- !u!114 &6354642832139179775
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,8 +147,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc7072406066baf4d964f03e46011d10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 8
-  damage: 15
+  speed: 10
+  damage: 10
 --- !u!1001 &8662882637000853055
 PrefabInstance:
   m_ObjectHideFlags: 0

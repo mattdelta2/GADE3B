@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {/*
@@ -303,12 +304,15 @@ public class EnemyController : MonoBehaviour
     }*/
 
 
-
     public float health = 20f; // Initial health of the enemy
+    public float maxHealth = 20f; // Max health of the enemy
     public float damageAmount = 10f; // Damage amount the enemy will deal
     public float range = 10f; // Range within which the enemy can attack
     public float shootingInterval = 2f; // Time between attacks
     public GameObject projectilePrefab; // Prefab of the projectile to shoot
+    public GameObject healthBarPrefab; // Health bar prefab
+    private GameObject healthBar; // Instance of the health bar
+    private Slider healthBarSlider; // Reference to the slider component
 
     private float shootingTimer = 0f;
     public Transform tower; // Reference to the main tower
@@ -333,6 +337,12 @@ public class EnemyController : MonoBehaviour
             agent = gameObject.AddComponent<NavMeshAgent>();
         }
 
+        // Instantiate the health bar and set its max health
+        healthBar = Instantiate(healthBarPrefab, transform.position + Vector3.up * 2, Quaternion.identity, transform);
+        healthBarSlider = healthBar.GetComponentInChildren<Slider>();
+        healthBarSlider.maxValue = maxHealth;
+        healthBarSlider.value = health;
+
         // Set initial destination to the tower
         SetDestination(tower);
     }
@@ -346,20 +356,19 @@ public class EnemyController : MonoBehaviour
             return; // Exit early if the agent is null
         }
 
-        // Null check for the target
-        if (currentTarget == null)
+        // Handle if the current target has been destroyed or is null
+        if (currentTarget == null || currentTarget.gameObject == null)
         {
-            Debug.LogWarning("Current target is null.");
-            // Assign the tower as the fallback target
-            currentTarget = tower;
-        }
+            Debug.LogWarning("Current target has been destroyed or is null. Finding a new target.");
+            currentTarget = FindNewTarget();
 
-        // Handle case when currentTarget has been destroyed
-        if (currentTarget != null && currentTarget.gameObject == null)
-        {
-            Debug.LogWarning("Current target has been destroyed.");
-            currentTarget = null;  // Reset target if it's destroyed
-            return;  // Exit Update early if the target is destroyed
+            // If no new target is found, stop the enemy or handle fallback behavior
+            if (currentTarget == null)
+            {
+                Debug.LogWarning("No valid target found. Stopping enemy.");
+                agent.isStopped = true; // Optional: stop the enemy if no target is found
+                return;
+            }
         }
 
         // Ensure destination is set and check if the agent is moving
@@ -378,6 +387,12 @@ public class EnemyController : MonoBehaviour
 
         // Continuously search for defenders to prioritize them
         FindClosestDefender();
+
+        // Update health bar position to stay above the enemy
+        if (healthBar != null)
+        {
+            healthBar.transform.position = transform.position + Vector3.up * 2;
+        }
 
         // Check if there's a defender to attack or move toward the tower
         if (currentTarget != null && agent.remainingDistance > 0.5f)
@@ -493,10 +508,21 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // Find a new target if the current one is destroyed
+    private Transform FindNewTarget()
+    {
+        // First, try to find the closest defender
+        FindClosestDefender();
+
+        // If no defenders are found, return the tower
+        return currentTarget != null ? currentTarget : tower;
+    }
+
     // Take damage method
     public void TakeDamage(float amount)
     {
         health -= amount;
+        healthBarSlider.value = health; // Update the health bar when taking damage
         if (health <= 0)
         {
             Die();
@@ -506,8 +532,8 @@ public class EnemyController : MonoBehaviour
     // Handle the enemy's death
     private void Die()
     {
-        // Handle enemy death (e.g., destroy enemy, play animation)
-        Destroy(gameObject);
+        Destroy(healthBar); // Destroy the health bar when the enemy dies
+        Destroy(gameObject); // Destroy the enemy
     }
 
     // Helper method to check if the enemy is dead
@@ -519,10 +545,27 @@ public class EnemyController : MonoBehaviour
     // Method to recalculate path (for when the NavMesh is updated)
     public void RecalculatePath()
     {
-        if (agent != null && currentTarget != null)
+        // Check if the NavMeshAgent and currentTarget are valid
+        if (agent != null)
         {
-            agent.SetDestination(currentTarget.position);
-            Debug.Log("Enemy recalculated path to target: " + currentTarget.name);
+            // If the currentTarget is null or destroyed, find a new valid target
+            if (currentTarget == null || currentTarget.gameObject == null)
+            {
+                Debug.LogWarning("Current target is null or destroyed. Finding a new target.");
+                currentTarget = FindNewTarget(); // Use your existing FindNewTarget method
+            }
+
+            // If a valid target is found, set the agent's destination
+            if (currentTarget != null)
+            {
+                agent.SetDestination(currentTarget.position);
+                Debug.Log("Enemy recalculated path to target: " + currentTarget.name);
+            }
+            else
+            {
+                Debug.LogWarning("No valid target found. Stopping enemy.");
+                agent.isStopped = true; // Stop the enemy if no target exists
+            }
         }
     }
 }

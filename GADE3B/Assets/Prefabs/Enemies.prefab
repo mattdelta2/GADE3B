@@ -50,10 +50,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 20
+  maxHealth: 20
   damageAmount: 10
-  range: 50
+  range: 20
   shootingInterval: 1
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
+  healthBarPrefab: {fileID: 819151322862545898, guid: d2efdd4ce47c1104ba4793c73695744c, type: 3}
   tower: {fileID: 0}
   shootProjectile: {fileID: 0}
 --- !u!135 &-4735756282337569122

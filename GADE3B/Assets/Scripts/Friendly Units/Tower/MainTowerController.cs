@@ -319,6 +319,7 @@ public class MainTowerController : MonoBehaviour
         SceneManager.LoadScene("EndScene");
         Debug.Log("MainTower down");
         Destroy(gameObject);
+        Time.timeScale = 0f;
     }
 
     public bool IsDead()
