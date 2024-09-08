@@ -13,6 +13,14 @@ public class DefenderController : MonoBehaviour
 
     private float shootingTimer = 0f;
     public Transform target; // Current enemy target
+    public Transform shootProjectile;
+
+
+    private void Start()
+    {
+        shootProjectile = transform.Find("shootProjectile");
+
+    }
 
     private void Update()
     {
@@ -32,7 +40,7 @@ public class DefenderController : MonoBehaviour
         if (target != null && projectilePrefab != null)
         {
             // Create the projectile and launch it at the enemy
-            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
             ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
             if (projectileController != null)
             {

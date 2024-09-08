@@ -314,9 +314,12 @@ public class EnemyController : MonoBehaviour
     public Transform tower; // Reference to the main tower
     private Transform currentTarget; // Current target (either tower or a defender)
     private NavMeshAgent agent; // NavMeshAgent to handle movement and pathfinding
+    public Transform shootProjectile; // Where the projectiles will spawn from
 
     private void Start()
     {
+        shootProjectile = transform.Find("shootProjectile");
+
         // Ensure the tower is assigned
         if (tower == null)
         {
@@ -336,6 +339,35 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
+        // Null check for the agent
+        if (agent == null)
+        {
+            Debug.LogError("NavMeshAgent is missing on this enemy.");
+            return; // Exit early if the agent is null
+        }
+
+        // Null check for the target
+        if (currentTarget == null)
+        {
+            Debug.LogWarning("Current target is null.");
+            // Assign the tower as the fallback target
+            currentTarget = tower;
+        }
+
+        // Handle case when currentTarget has been destroyed
+        if (currentTarget != null && currentTarget.gameObject == null)
+        {
+            Debug.LogWarning("Current target has been destroyed.");
+            currentTarget = null;  // Reset target if it's destroyed
+            return;  // Exit Update early if the target is destroyed
+        }
+
+        // Ensure destination is set and check if the agent is moving
+        if (agent.hasPath && currentTarget != null)
+        {
+            Debug.Log("Agent moving towards: " + currentTarget.name + " | Remaining Distance: " + agent.remainingDistance);
+        }
+
         // Handle shooting logic
         shootingTimer += Time.deltaTime;
         if (shootingTimer >= shootingInterval)
@@ -347,23 +379,34 @@ public class EnemyController : MonoBehaviour
         // Continuously search for defenders to prioritize them
         FindClosestDefender();
 
-        // Check if there's a defender to attack
-        if (currentTarget != null)
+        // Check if there's a defender to attack or move toward the tower
+        if (currentTarget != null && agent.remainingDistance > 0.5f)
         {
-            SetDestination(currentTarget); // Attack defender if it's in range
-        }
-        else
-        {
-            SetDestination(tower); // Otherwise, move towards the tower
+            SetDestination(currentTarget); // Attack defender if it's in range, else move towards the tower
         }
     }
 
     // Set the destination to a target (either defender or tower)
     private void SetDestination(Transform target)
     {
-        if (agent != null && target != null)
+        if (agent != null && target != null && target.gameObject != null) // Ensure the target hasn't been destroyed
         {
-            agent.SetDestination(target.position);
+            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+
+            // Only set the destination if it's far enough
+            if (distanceToTarget > 1f) // Set a minimum distance to avoid constant recalculation
+            {
+                agent.SetDestination(target.position);
+                Debug.Log("Setting destination to: " + target.name + " at position: " + target.position);
+            }
+            else
+            {
+                Debug.Log("Target is too close. Not setting a new destination.");
+            }
+        }
+        else
+        {
+            Debug.LogError("NavMeshAgent or Target is null or destroyed.");
         }
     }
 
@@ -372,17 +415,42 @@ public class EnemyController : MonoBehaviour
     {
         if (currentTarget != null && projectilePrefab != null)
         {
-            // Create the projectile and shoot it at the target
-            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-            ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
-            if (projectileController != null)
+            // Check if the enemy is within shooting range of the target
+            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            if (distanceToTarget <= range) // Only shoot if within range
             {
-                projectileController.SetTarget(currentTarget); // Shoot at the current target
+                // Log the shoot position to ensure it's correct
+                Debug.Log("Shooting projectile from: " + shootProjectile.position);
+
+                // Create the projectile and shoot it at the target
+                GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
+                Debug.Log("Projectile instantiated at position: " + shootProjectile.position);
+
+                ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
+                if (projectileController != null)
+                {
+                    projectileController.SetTarget(currentTarget); // Shoot at the current target
+                }
+
+                // Check if the target is a defender
+                DefenderController defender = currentTarget.GetComponent<DefenderController>();
+                if (defender != null)
+                {
+                    defender.TakeDamage(damageAmount); // Apply damage to the defender
+                }
+                else
+                {
+                    // If it's not a defender, assume it's the tower
+                    MainTowerController towerController = currentTarget.GetComponent<MainTowerController>();
+                    if (towerController != null)
+                    {
+                        towerController.TakeDamage(damageAmount); // Apply damage to the tower
+                    }
+                }
             }
-            DefenderController defender = currentTarget.GetComponent<DefenderController>();
-            if (defender != null)
+            else
             {
-                defender.TakeDamage(damageAmount); // Apply damage to the defender
+                Debug.Log("Enemy is not within shooting range.");
             }
         }
     }
@@ -396,18 +464,33 @@ public class EnemyController : MonoBehaviour
 
         foreach (Collider defenderCollider in hitDefenders)
         {
-            if (defenderCollider.CompareTag("Defender")) // Assumes defenders have the "Defender" tag
+            if (defenderCollider.CompareTag("Defender"))
             {
-                float distanceToDefender = Vector3.Distance(transform.position, defenderCollider.transform.position);
+                Transform defenderTransform = defenderCollider.transform;
+
+                // Skip destroyed defenders
+                if (defenderTransform == null || defenderTransform.gameObject == null)
+                {
+                    continue;  // Skip null or destroyed objects
+                }
+
+                float distanceToDefender = Vector3.Distance(transform.position, defenderTransform.position);
                 if (distanceToDefender < closestDistance)
                 {
                     closestDistance = distanceToDefender;
-                    closestDefender = defenderCollider.transform;
+                    closestDefender = defenderTransform;
                 }
             }
         }
 
-        currentTarget = closestDefender; // Set the closest defender as the target, or null if no defenders
+        if (closestDefender != null)
+        {
+            currentTarget = closestDefender;
+        }
+        else
+        {
+            currentTarget = tower; // Target the tower if no defenders are found
+        }
     }
 
     // Take damage method
@@ -431,6 +514,16 @@ public class EnemyController : MonoBehaviour
     public bool IsDead()
     {
         return health <= 0;
+    }
+
+    // Method to recalculate path (for when the NavMesh is updated)
+    public void RecalculatePath()
+    {
+        if (agent != null && currentTarget != null)
+        {
+            agent.SetDestination(currentTarget.position);
+            Debug.Log("Enemy recalculated path to target: " + currentTarget.name);
+        }
     }
 }
 

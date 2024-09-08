@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 3144601464501191005}
   - component: {fileID: 4169295697284026370}
   - component: {fileID: 9063985174981039667}
-  - component: {fileID: 514276221335928409}
   - component: {fileID: 1234582563845035285}
+  - component: {fileID: 3593642787655183416}
   m_Layer: 0
   m_Name: BulletEnemies
   m_TagString: Untagged
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 1135219151009668403}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 128.6038, y: 27.94, z: 139.91287}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 6.6511636, y: 6.6511636, z: 21.816483}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -108,20 +108,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.70662886
   m_Center: {x: 0, y: 0, z: 0.20662889}
---- !u!114 &514276221335928409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1135219151009668403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d66afa51b5822a445baee5781b75c06d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  damage: 20
 --- !u!54 &1234582563845035285
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,6 +135,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
+--- !u!114 &3593642787655183416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135219151009668403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc7072406066baf4d964f03e46011d10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 8
+  damage: 15
 --- !u!1001 &8662882637000853055
 PrefabInstance:
   m_ObjectHideFlags: 0

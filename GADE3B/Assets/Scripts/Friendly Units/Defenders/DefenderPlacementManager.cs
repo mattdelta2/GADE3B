@@ -91,6 +91,7 @@ public class DefenderPlacementManager : MonoBehaviour
         currentDefender = null; // Ready for the next placement
     }
     */
+
     public GameObject defenderPrefab; // Set this in the inspector
     public LayerMask terrainLayer; // Set the terrain layer in the inspector
     public Camera mainCamera; // Reference to the main camera
@@ -183,6 +184,9 @@ public class DefenderPlacementManager : MonoBehaviour
             {
                 terrainGenerator.ReBakeNavMesh();  // Re-bake the NavMesh to include the defender
                 Debug.Log("NavMesh re-baked after defender placement.");
+
+                // Notify all enemies to recalculate their paths
+                RecalculateEnemyPaths();
             }
             else
             {
@@ -197,5 +201,16 @@ public class DefenderPlacementManager : MonoBehaviour
         {
             Debug.LogError("Not enough gold to place the defender.");
         }
+    }
+
+    private void RecalculateEnemyPaths()
+    {
+        // Find all active enemies and recalculate their paths
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+        foreach (EnemyController enemy in enemies)
+        {
+            enemy.RecalculatePath(); // Ask enemies to recalculate their path
+        }
+        Debug.Log("All enemies recalculated their paths after NavMesh rebake.");
     }
 }
