@@ -13,30 +13,30 @@ public class MainMenuController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         
     }
 
 
-    void MainMenu()
+    public void MainMenu()
     {
         SceneManager.LoadScene("MainMenu");
     }
 
-    void Quit()
+    public void Quit()
     {
         Application.Quit();
     }
 
 
-    void Play()
+    public void Play()
     {
         SceneManager.LoadScene("GameScene");
     }
 
 
-    void EndScreen()
+    public void EndScreen()
     {
         SceneManager.LoadScene("EndScene");
     }
