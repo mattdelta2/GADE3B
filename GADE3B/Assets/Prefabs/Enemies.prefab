@@ -50,13 +50,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864b8f812010ad041923ef2e688cf150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 20
-  maxHealth: 20
-  damageAmount: 10
-  range: 20
-  shootingInterval: 1
+  health: 30
+  maxHealth: 30
+  damageAmount: 5
+  range: 45
+  shootingInterval: 0.5
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
-  healthBarPrefab: {fileID: 819151322862545898, guid: d2efdd4ce47c1104ba4793c73695744c, type: 3}
+  healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
   tower: {fileID: 0}
   shootProjectile: {fileID: 0}
 --- !u!135 &-4735756282337569122
@@ -154,7 +154,7 @@ Transform:
   m_GameObject: {fileID: 1868074661654662718}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 6.91, z: 0.65}
+  m_LocalPosition: {x: 0, y: 4.87, z: 5.61}
   m_LocalScale: {x: 1, y: 0.59086, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
