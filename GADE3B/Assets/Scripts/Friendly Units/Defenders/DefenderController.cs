@@ -52,14 +52,28 @@ public class DefenderController : MonoBehaviour
     // Method to shoot at an enemy
     private void ShootAtEnemy()
     {
+
         if (target != null && projectilePrefab != null)
         {
             // Create the projectile and launch it at the enemy
             GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
+
+            // Ensure the projectile faces the enemy
+            projectile.transform.LookAt(target.position);
+
+            // Optionally, adjust the rotation if the projectile is not facing correctly (depends on your projectile model)
+            // For example, if your projectile needs to rotate along a certain axis:
+            // projectile.transform.Rotate(90, 0, 0); // Adjust the values as per your model orientation
+
             ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
             if (projectileController != null)
             {
+                // Set the target for the projectile
                 projectileController.SetTarget(target);
+            }
+            else
+            {
+                Debug.LogError("ProjectileController component missing on projectile prefab.");
             }
         }
     }

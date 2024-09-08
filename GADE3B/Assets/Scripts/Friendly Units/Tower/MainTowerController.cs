@@ -245,18 +245,30 @@ public class MainTowerController : MonoBehaviour
 
     private void LaunchProjectile(Transform target)
     {
+        // Instantiate the projectile at the spawn point
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+
+        // Check if the projectile has the ProjectileController script
         ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
 
         if (projectileController != null)
         {
-            projectileController.SetTarget(target); // Set the target transform
+            // Make the projectile look at the target when it's instantiated
+            projectile.transform.LookAt(target.position);
+
+            // If needed, adjust the rotation to align the bullet's forward or top correctly
+            // For example, if your bullet's top is facing up and needs to be rotated downwards:
+            // projectile.transform.Rotate(90, 0, 0); // Adjust based on your bullet model's orientation
+
+            // Set the target for the projectile
+            projectileController.SetTarget(target);
         }
         else
         {
             Debug.LogError("ProjectileController component missing on projectile prefab.");
         }
     }
+
 
     public void TakeDamage(float damageAmount)
     {
