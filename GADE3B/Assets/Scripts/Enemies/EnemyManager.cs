@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI; 
+using UnityEngine.AI;
 public class EnemyManager : MonoBehaviour
 {
     public List<GameObject> enemyPrefabs; // List to hold different enemy prefabs
@@ -18,6 +18,42 @@ public class EnemyManager : MonoBehaviour
     }
 
     // Method to spawn an enemy at a given position
+
+/*
+    code to add waves and increase diffuculty to game!!!!!!
+
+
+    
+    public int waveNumber = 1;
+
+    public void SpawnEnemy(Vector3 spawnPosition)
+    {
+        if (enemyPrefabs.Count == 0)
+        {
+            Debug.LogError("No enemy prefabs assigned.");
+            return;
+        }
+
+        int randomIndex = Random.Range(0, enemyPrefabs.Count);
+        GameObject enemyInstance = Instantiate(enemyPrefabs[randomIndex], spawnPosition, Quaternion.identity);
+
+        EnemyController enemyController = enemyInstance.GetComponent<EnemyController>();
+        if (enemyController != null)
+        {
+            enemyController.tower = tower;
+            enemyController.health += waveNumber * 10; // Increase health per wave
+            enemyController.damageAmount += waveNumber * 2; // Increase damage per wave
+
+            NavMeshAgent agent = enemyInstance.GetComponent<NavMeshAgent>();
+            if (agent != null && tower != null)
+            {
+                agent.SetDestination(tower.position);
+            }
+
+            activeEnemies.Add(enemyController);
+        }
+    }
+    */
     public void SpawnEnemy(Vector3 spawnPosition)
     {
         if (enemyPrefabs.Count == 0)
@@ -56,7 +92,7 @@ public class EnemyManager : MonoBehaviour
     // Method to remove an enemy from the active list when it's destroyed
     public void RemoveEnemy(EnemyController enemy)
     {
-        if (activeEnemies.Contains(enemy))
+        if (enemy != null && activeEnemies.Contains(enemy))
         {
             activeEnemies.Remove(enemy);
         }
