@@ -50,6 +50,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 20
   damageAmount: 10
+  range: 50
+  shootingInterval: 1
+  projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
   tower: {fileID: 0}
 --- !u!135 &-4735756282337569122
 SphereCollider:

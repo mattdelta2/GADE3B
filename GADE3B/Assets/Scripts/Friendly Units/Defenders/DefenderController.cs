@@ -9,6 +9,8 @@ public class DefenderController : MonoBehaviour
     public float shootingInterval = 1.5f; // Time between shots
     public GameObject projectilePrefab; // Projectile prefab to be shot at enemies
 
+    public float health = 50f; // Health of the defender
+
     private float shootingTimer = 0f;
     public Transform target; // Current enemy target
 
@@ -24,6 +26,7 @@ public class DefenderController : MonoBehaviour
         FindClosestEnemy(); // Continuously search for enemies
     }
 
+    // Method to shoot at an enemy
     private void ShootAtEnemy()
     {
         if (target != null && projectilePrefab != null)
@@ -38,6 +41,7 @@ public class DefenderController : MonoBehaviour
         }
     }
 
+    // Method to find the closest enemy in range
     private void FindClosestEnemy()
     {
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
@@ -58,6 +62,23 @@ public class DefenderController : MonoBehaviour
         }
 
         target = closestEnemy;
+    }
+
+    // Method for the defender to take damage
+    public void TakeDamage(float amount)
+    {
+        health -= amount;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    // Method to handle defender's death
+    private void Die()
+    {
+       
+        Destroy(gameObject); // Destroy the defender when health reaches zero
     }
 }
 

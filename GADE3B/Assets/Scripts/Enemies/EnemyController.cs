@@ -305,9 +305,14 @@ public class EnemyController : MonoBehaviour
 
 
     public float health = 20f; // Initial health of the enemy
-    public float damageAmount = 10f; // Damage amount the enemy will deal to the tower
-    public Transform tower; // Reference to the main tower
+    public float damageAmount = 10f; // Damage amount the enemy will deal
+    public float range = 10f; // Range within which the enemy can attack
+    public float shootingInterval = 2f; // Time between attacks
+    public GameObject projectilePrefab; // Prefab of the projectile to shoot
 
+    private float shootingTimer = 0f;
+    public Transform tower; // Reference to the main tower
+    private Transform currentTarget; // Current target (either tower or a defender)
     private NavMeshAgent agent; // NavMeshAgent to handle movement and pathfinding
 
     private void Start()
@@ -325,28 +330,84 @@ public class EnemyController : MonoBehaviour
             agent = gameObject.AddComponent<NavMeshAgent>();
         }
 
-        // Set the destination to the tower
-        SetDestinationToTower();
+        // Set initial destination to the tower
+        SetDestination(tower);
     }
 
-    // Set the destination to the tower
-    private void SetDestinationToTower()
-    {
-        if (agent != null && tower != null)
-        {
-            agent.SetDestination(tower.position);
-        }
-    }
-
-    // Update is called once per frame
     private void Update()
     {
-        // Check if the enemy has reached the tower
-        if (agent != null && agent.remainingDistance <= agent.stoppingDistance)
+        // Handle shooting logic
+        shootingTimer += Time.deltaTime;
+        if (shootingTimer >= shootingInterval)
         {
-            Debug.Log("Enemy reached the tower.");
-            Die(); // Destroy the enemy when it reaches the tower
+            ShootAtTarget();
+            shootingTimer = 0f; // Reset the shooting timer
         }
+
+        // Continuously search for defenders to prioritize them
+        FindClosestDefender();
+
+        // Check if there's a defender to attack
+        if (currentTarget != null)
+        {
+            SetDestination(currentTarget); // Attack defender if it's in range
+        }
+        else
+        {
+            SetDestination(tower); // Otherwise, move towards the tower
+        }
+    }
+
+    // Set the destination to a target (either defender or tower)
+    private void SetDestination(Transform target)
+    {
+        if (agent != null && target != null)
+        {
+            agent.SetDestination(target.position);
+        }
+    }
+
+    // Shoot a projectile at the current target
+    private void ShootAtTarget()
+    {
+        if (currentTarget != null && projectilePrefab != null)
+        {
+            // Create the projectile and shoot it at the target
+            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
+            if (projectileController != null)
+            {
+                projectileController.SetTarget(currentTarget); // Shoot at the current target
+            }
+            DefenderController defender = currentTarget.GetComponent<DefenderController>();
+            if (defender != null)
+            {
+                defender.TakeDamage(damageAmount); // Apply damage to the defender
+            }
+        }
+    }
+
+    // Find the closest defender to attack
+    private void FindClosestDefender()
+    {
+        Collider[] hitDefenders = Physics.OverlapSphere(transform.position, range);
+        float closestDistance = Mathf.Infinity;
+        Transform closestDefender = null;
+
+        foreach (Collider defenderCollider in hitDefenders)
+        {
+            if (defenderCollider.CompareTag("Defender")) // Assumes defenders have the "Defender" tag
+            {
+                float distanceToDefender = Vector3.Distance(transform.position, defenderCollider.transform.position);
+                if (distanceToDefender < closestDistance)
+                {
+                    closestDistance = distanceToDefender;
+                    closestDefender = defenderCollider.transform;
+                }
+            }
+        }
+
+        currentTarget = closestDefender; // Set the closest defender as the target, or null if no defenders
     }
 
     // Take damage method
@@ -365,8 +426,6 @@ public class EnemyController : MonoBehaviour
         // Handle enemy death (e.g., destroy enemy, play animation)
         Destroy(gameObject);
     }
-
-
 
     // Helper method to check if the enemy is dead
     public bool IsDead()
