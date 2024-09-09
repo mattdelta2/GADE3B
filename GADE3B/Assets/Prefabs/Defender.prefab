@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 90
   damage: 8
-  shootingInterval: 1.5
+  shootingInterval: 2.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 60
   maxHealth: 60

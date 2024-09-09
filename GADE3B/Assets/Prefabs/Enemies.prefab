@@ -54,7 +54,7 @@ MonoBehaviour:
   maxHealth: 30
   damageAmount: 5
   range: 45
-  shootingInterval: 1
+  shootingInterval: 0.5
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
   healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
   tower: {fileID: 0}

@@ -290,7 +290,7 @@ MonoBehaviour:
   - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   terrain: {fileID: 1106253521}
   mainTowerController: {fileID: 0}
-  spawnInterval: 1
+  spawnInterval: 5
   pathManager: {fileID: 1975598647}
   terrainGenerator: {fileID: 1544179510}
 --- !u!4 &174013545
@@ -339,7 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pathLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
 --- !u!4 &643516135
 Transform:
   m_ObjectHideFlags: 0
@@ -1002,7 +1002,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 3.3933334
+  m_VoxelSize: 0.6666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 1
@@ -1328,8 +1328,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 1106253521}
-  width: 257
-  depth: 257
+  width: 256
+  depth: 256
   height: 0
   scale: 5
   offsetX: 100
@@ -1357,7 +1357,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544179509}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
   m_Name: 
@@ -1377,7 +1377,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 3.3933334
+  m_VoxelSize: 0.6666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
@@ -1687,7 +1687,7 @@ MonoBehaviour:
   terrain: {fileID: 1106253521}
   defenderPlacementMarkerPrefab: {fileID: 509266712699559402, guid: 93a71697d1523c940ba2ba0d2e0b9f18, type: 3}
   numberOfSpawnPoints: 10
-  edgeMargin: 5
+  edgeMargin: 20
   minimumDistanceFromTower: 35
   defenderPlacementRadius: 5
   defenderPositions:
