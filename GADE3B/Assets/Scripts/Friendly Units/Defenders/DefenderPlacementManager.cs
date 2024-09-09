@@ -100,6 +100,7 @@ public class DefenderPlacementManager : MonoBehaviour
     public PathManager pathManager; // Reference to the PathManager for predetermined positions
     public float placementThreshold = 2.0f; // Max distance from a valid position to allow placement
     public bool isPlacing = false; // Track whether we're in placement mode
+    
 
     void Update()
     {
@@ -182,6 +183,7 @@ public class DefenderPlacementManager : MonoBehaviour
 
             // Trigger NavMesh rebake after defender placement
             StartCoroutine(RebakeNavMeshAndRecalculatePaths());
+
 
             // Allow placement of more defenders if necessary
             isPlacing = true; // Keep placement mode active

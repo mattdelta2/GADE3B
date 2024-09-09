@@ -188,6 +188,7 @@ public class MainTowerController : MonoBehaviour
 
     private GameObject healthBarInstance; // Instance of the health bar prefab
     private Slider healthBarSlider; // Reference to the slider component
+    public TerrainGenerator terrainGenerator;
 
     private void Start()
     {
@@ -205,6 +206,15 @@ public class MainTowerController : MonoBehaviour
 
         InstantiateHealthBar(); // Instantiate the health bar
         UpdateHealthBar(); // Initialize the health bar with current health
+
+        if (terrainGenerator != null)
+        {
+            terrainGenerator.ReBakeNavMesh();
+        }
+        else
+        {
+            Debug.LogError("TerrainGenerator reference is missing.");
+        }
     }
 
     private void Update()
@@ -331,7 +341,7 @@ public class MainTowerController : MonoBehaviour
         SceneManager.LoadScene("EndScene");
         Debug.Log("MainTower down");
         Destroy(gameObject);
-        
+
     }
 
     public bool IsDead()

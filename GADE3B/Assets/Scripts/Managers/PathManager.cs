@@ -596,6 +596,7 @@ public class PathManager : MonoBehaviour
 
         Vector3[] points = new Vector3[numberOfSpawnPoints];
         int maxAttempts = 100;
+        float searchRadius = 20f; // More reasonable radius for checking if point is on the NavMesh
 
         for (int i = 0; i < numberOfSpawnPoints; i++)
         {
@@ -610,33 +611,34 @@ public class PathManager : MonoBehaviour
                 bool isEdgeX = UnityEngine.Random.value > 0.5f;
                 bool isEdgeZ = UnityEngine.Random.value > 0.5f;
 
+                // Choose X or Z edge to spawn near
                 float x = isEdgeX ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainWidth - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainWidth - edgeMargin);
                 float z = isEdgeZ ? (UnityEngine.Random.value > 0.5f ? edgeMargin : terrainHeight - edgeMargin) : UnityEngine.Random.Range(edgeMargin, terrainHeight - edgeMargin);
 
                 spawnPoint = new Vector3(x, 0, z);
-                spawnPoint.y = terrain.SampleHeight(spawnPoint);
+                spawnPoint.y = terrain.SampleHeight(spawnPoint); // Ensure Y is based on terrain
 
-                float searchRadius = 100f;
+                // Check if the point is on the NavMesh
                 NavMeshHit hit;
                 bool isOnNavMesh = NavMesh.SamplePosition(spawnPoint, out hit, searchRadius, NavMesh.AllAreas);
 
-                if (!isOnNavMesh)
+                if (isOnNavMesh)
                 {
-                    Debug.Log($"Spawn point {spawnPoint} is NOT on the NavMesh.");
-                    continue;
-                }
+                    spawnPoint = hit.position; // Use the position on the NavMesh
 
-                validPoint = Vector3.Distance(hit.position, tower.position) >= minimumDistanceFromTower && !IsPointBlockedByDefender(hit.position);
+                    // Additional checks: distance from tower and blocking by defenders
+                    validPoint = Vector3.Distance(hit.position, tower.position) >= minimumDistanceFromTower && !IsPointBlockedByDefender(hit.position);
+                }
 
                 if (!validPoint)
                 {
-                    Debug.Log($"Attempt {attempts}: Spawn point {spawnPoint} was invalid.");
+                    Debug.Log($"Attempt {attempts}: Spawn point {spawnPoint} was invalid or not on the NavMesh.");
                 }
             }
 
             if (validPoint)
             {
-                points[i] = spawnPoint;
+                points[i] = spawnPoint; // Store the valid spawn point
                 Debug.Log($"Spawn point {spawnPoint} is valid and will be used.");
             }
             else
@@ -647,6 +649,7 @@ public class PathManager : MonoBehaviour
 
         return points;
     }
+
 
     public List<Vector3> GeneratePath(Vector3 spawnPoint)
     {

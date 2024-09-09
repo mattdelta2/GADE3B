@@ -100,6 +100,7 @@ public class GameManager : MonoBehaviour
             towerController.enemySpawner = enemySpawner;
             towerController.terrain = terrain;
             towerController.projectilePrefab = projectilePrefab;
+            towerController.terrainGenerator = terrainGenerator;
 
             // Assign MainTowerController to EnemySpawner
             enemySpawner.mainTowerController = towerController;

@@ -363,7 +363,7 @@ public class EnemySpawner : MonoBehaviour
                     enemyController.tower = mainTowerController.transform;
 
                     // Ensure the tower is on the NavMesh
-                    if (NavMesh.SamplePosition(mainTowerController.transform.position, out NavMeshHit towerHit, 10f, NavMesh.AllAreas))
+                    if (NavMesh.SamplePosition(mainTowerController.transform.position, out NavMeshHit towerHit, 5f, NavMesh.AllAreas))
                     {
                         Vector3 validTowerPosition = towerHit.position;
                         Debug.Log($"Valid tower position on NavMesh: {validTowerPosition}");
