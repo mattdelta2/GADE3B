@@ -1972,8 +1972,7 @@ MonoBehaviour:
   edgeMargin: 20
   minimumDistanceFromTower: 35
   defenderPlacementRadius: 5
-  defenderPositions:
-  - {x: 0, y: 0, z: 0}
+  defenderPositions: []
 --- !u!4 &1975598648
 Transform:
   m_ObjectHideFlags: 0
@@ -2143,7 +2142,7 @@ MonoBehaviour:
   startingGold: 20
   currentGold: 0
   goldDisplay: {fileID: 69286238}
-  goldGainInterval: 5
+  goldGainInterval: 2.5
   goldGainAmount: 1
 --- !u!4 &2079669607
 Transform:
