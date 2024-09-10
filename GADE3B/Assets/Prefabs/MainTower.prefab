@@ -190,7 +190,7 @@ MonoBehaviour:
   healthBarPrefab: {fileID: 819151322862545898, guid: d2efdd4ce47c1104ba4793c73695744c, type: 3}
   shootingRange: 50
   damage: 10
-  shootingInterval: 2.5
+  shootingInterval: 1.8
   maxHealth: 100
   projectileSpawnPoint: {fileID: 0}
 --- !u!1001 &7720286113496273540
@@ -257,6 +257,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: tower_13
       objectReference: {fileID: 0}
+    - target: {fileID: 6050603399216916646, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a642a98ec95f45e4fab9e3af34300406, type: 2}
+    - target: {fileID: 6137741661657198242, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a642a98ec95f45e4fab9e3af34300406, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

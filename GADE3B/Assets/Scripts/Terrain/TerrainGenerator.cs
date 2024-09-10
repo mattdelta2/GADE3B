@@ -268,10 +268,17 @@ public class TerrainGenerator : MonoBehaviour
     // Public method to re-bake NavMesh if terrain changes at runtime
     public void ReBakeNavMesh()
     {
+        if (navMeshSurface == null)
+        {
+            Debug.LogError("NavMeshSurface is not assigned, cannot rebake NavMesh.");
+            return;
+        }
+
         Debug.Log("Re-baking NavMesh...");
         navMeshSurface.BuildNavMesh();
         Debug.Log("NavMesh re-baked.");
     }
+
 
     // Public method to check if the NavMesh is ready
     public bool IsNavMeshReady()
@@ -279,7 +286,7 @@ public class TerrainGenerator : MonoBehaviour
         return navMeshReady;
     }
 
-    
+
 
 
 

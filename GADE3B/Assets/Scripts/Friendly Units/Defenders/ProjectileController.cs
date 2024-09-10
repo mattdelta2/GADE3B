@@ -29,7 +29,7 @@ public class ProjectileController : MonoBehaviour
 
         // Move towards the target if it's still valid
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        transform.position += direction * speed;
         transform.rotation = Quaternion.LookRotation(direction);
 
         // Check if the projectile has reached the target

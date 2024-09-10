@@ -1,3 +1,5 @@
+using System.Collections;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -81,30 +83,41 @@ public class GameManager : MonoBehaviour
     public GameObject projectilePrefab;
     public FollowCamera cameraController;
     public TerrainGenerator terrainGenerator;
+    public DefenderPlacementManager defenderPlacementManager;
+    private NavMeshSurface navMeshSurface;
 
     private GameObject tower; // Store reference to the instantiated tower
 
+
     void Start()
     {
+         navMeshSurface = FindObjectOfType<NavMeshSurface>();
         // Instantiate the tower prefab at the desired position
         tower = Instantiate(towerPrefab, new Vector3(128f, 5.32f, 128f), Quaternion.identity);
 
-        // Get the MainTowerController component from the instantiated tower
+        // Set up references and NavMesh rebaking
+        InitializeTowerAndNavMesh();
+       // terrainGenerator.ReBakeNavMesh();
+       defenderPlacementManager.TogglePlacementMode(false);
+       
+        
+    }
+
+    private void InitializeTowerAndNavMesh()
+    {
         MainTowerController towerController = tower.GetComponent<MainTowerController>();
 
-        // Ensure the towerController and enemySpawner exist
         if (towerController != null && enemySpawner != null)
         {
-            // Set references in the MainTowerController
+            // Assign references as before
             towerController.pathManager = pathManager;
             towerController.enemySpawner = enemySpawner;
             towerController.terrain = terrain;
             towerController.projectilePrefab = projectilePrefab;
-
-            // Assign MainTowerController to EnemySpawner
             enemySpawner.mainTowerController = towerController;
-            Debug.Log("MainTowerController assigned to EnemySpawner.");
 
+            //terrainGenerator.ReBakeNavMesh();
+           // navMeshSurface.BuildNavMesh();
             // Set the tower in the PathManager
             pathManager.SetTower(tower.transform);
 
@@ -112,14 +125,19 @@ public class GameManager : MonoBehaviour
             if (cameraController != null)
             {
                 cameraController.SetTarget(tower.transform);
-                Debug.Log("Camera target set to the tower.");
             }
 
-            // Re-bake the NavMesh to account for the tower placement
-            if (terrainGenerator != null)
+            // Ensure TerrainGenerator is available
+            if (terrainGenerator == null)
             {
-                terrainGenerator.ReBakeNavMesh();
-                Debug.Log("NavMesh re-baked to include the tower.");
+                terrainGenerator = FindObjectOfType<TerrainGenerator>();
+            }
+
+
+
+            else
+            {
+                Debug.LogError("TerrainGenerator not found.");
             }
         }
         else
@@ -129,5 +147,14 @@ public class GameManager : MonoBehaviour
             if (enemySpawner == null)
                 Debug.LogError("EnemySpawner reference is missing.");
         }
+    }
+
+    private IEnumerator DelayNavMeshRebake()
+    {
+        // Wait a short time to ensure everything is ready before rebaking
+        yield return new WaitForSeconds(0f);
+
+        terrainGenerator.ReBakeNavMesh();
+        Debug.Log("NavMesh re-baked after delay.");
     }
 }
