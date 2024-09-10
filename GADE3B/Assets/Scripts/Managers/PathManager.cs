@@ -570,7 +570,7 @@ public class PathManager : MonoBehaviour
         defenderPositions.Add(new Vector3(94, terrain.SampleHeight(new Vector3(94, 0, 158)), 158));
         defenderPositions.Add(new Vector3(152, terrain.SampleHeight(new Vector3(152, 0, 95)), 95));
         defenderPositions.Add(new Vector3(50, terrain.SampleHeight(new Vector3(50, 0, 200)), 200));
-        defenderPositions.Add(new Vector3(220, terrain.SampleHeight(new Vector3(220, 0, 50)), 50));
+        defenderPositions.Add(new Vector3(190, terrain.SampleHeight(new Vector3(190, 0, 50)), 50));
 
 
 
