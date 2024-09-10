@@ -563,14 +563,14 @@ public class PathManager : MonoBehaviour
     private void PopulateDefenderPositions()
     {
 
-        defenderPositions.Add(new Vector3(100, terrain.SampleHeight(new Vector3(100, 0, 100)), 100));
+        defenderPositions.Add(new Vector3(110, terrain.SampleHeight(new Vector3(110, 0, 100)), 100));
         defenderPositions.Add(new Vector3(150, terrain.SampleHeight(new Vector3(150, 0, 150)), 150));
-        defenderPositions.Add(new Vector3(200, terrain.SampleHeight(new Vector3(200, 0, 200)), 200));
+        defenderPositions.Add(new Vector3(220, terrain.SampleHeight(new Vector3(220, 0, 200)), 200));
         defenderPositions.Add(new Vector3(60, terrain.SampleHeight(new Vector3(60, 0, 50)), 50));
         defenderPositions.Add(new Vector3(94, terrain.SampleHeight(new Vector3(94, 0, 158)), 158));
-        defenderPositions.Add(new Vector3(150, terrain.SampleHeight(new Vector3(150, 0, 95)), 95));
+        defenderPositions.Add(new Vector3(152, terrain.SampleHeight(new Vector3(152, 0, 95)), 95));
         defenderPositions.Add(new Vector3(50, terrain.SampleHeight(new Vector3(50, 0, 200)), 200));
-        defenderPositions.Add(new Vector3(200, terrain.SampleHeight(new Vector3(200, 0, 50)), 50));
+        defenderPositions.Add(new Vector3(220, terrain.SampleHeight(new Vector3(220, 0, 50)), 50));
 
 
 
