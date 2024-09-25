@@ -220,8 +220,12 @@ PrefabInstance:
       value: 285.9741
       objectReference: {fileID: 0}
     - target: {fileID: 2591555429836461506, guid: 9a12c90f98f39ee47a10690a7fe1a7d4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.48008293
+      objectReference: {fileID: 0}
+    - target: {fileID: 2591555429836461506, guid: 9a12c90f98f39ee47a10690a7fe1a7d4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 7.8507
+      value: 7.850708
       objectReference: {fileID: 0}
     - target: {fileID: 2591555429836461506, guid: 9a12c90f98f39ee47a10690a7fe1a7d4, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -233,7 +237,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3460635323290734437, guid: 9a12c90f98f39ee47a10690a7fe1a7d4, type: 3}
       propertyPath: m_text
-      value: Thank You for Playing
+      value: Game Over
       objectReference: {fileID: 0}
     - target: {fileID: 3473615767945107556, guid: 9a12c90f98f39ee47a10690a7fe1a7d4, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
