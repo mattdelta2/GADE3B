@@ -290,9 +290,12 @@ MonoBehaviour:
   - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
   terrain: {fileID: 1106253521}
   mainTowerController: {fileID: 0}
-  spawnInterval: 2
+  spawnInterval: 1
+  timeBetweenWaves: 5
+  enemiesPerWave: 10
   pathManager: {fileID: 1975598647}
   terrainGenerator: {fileID: 1544179510}
+  enemyManager: {fileID: 1450549545}
 --- !u!4 &174013545
 Transform:
   m_ObjectHideFlags: 0
@@ -1420,6 +1423,7 @@ GameObject:
   - component: {fileID: 1450549543}
   - component: {fileID: 1450549542}
   - component: {fileID: 1450549544}
+  - component: {fileID: 1450549545}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1474,6 +1478,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e150d24ecf19e9e4abbb50861242bc06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1450549545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450549541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b868ef33c3373d4787036db5119b7d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeEnemies: []
+  enemySpawner: {fileID: 174013544}
 --- !u!1 &1453669326
 GameObject:
   m_ObjectHideFlags: 0

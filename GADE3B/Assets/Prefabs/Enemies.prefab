@@ -54,11 +54,14 @@ MonoBehaviour:
   maxHealth: 30
   damageAmount: 5
   range: 45
-  shootingInterval: 1
-  projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
-  healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
   tower: {fileID: 0}
-  shootProjectile: {fileID: 0}
+  currentTarget: {fileID: 0}
+  projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
+  shootProjectile: {fileID: 6682431239539631990, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
+  healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
+  stuckThreshold: 3
+  enemySpawner: {fileID: 0}
+  shootingInterval: 1
 --- !u!135 &-4735756282337569122
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -304,173 +304,140 @@ public class EnemyController : MonoBehaviour
     }*/
 
 
-    public float health = 20f; // Initial health of the enemy
-    public float maxHealth = 20f; // Max health of the enemy
-    public float damageAmount = 10f; // Damage amount the enemy will deal
-    public float range = 10f; // Range within which the enemy can attack
-    public float shootingInterval = 2f; // Time between attacks
-    public GameObject projectilePrefab; // Prefab of the projectile to shoot
-    public GameObject healthBarPrefab; // Health bar prefab
-    private GameObject healthBar; // Instance of the health bar
-    private Slider healthBarSlider; // Reference to the slider component
 
-    private float shootingTimer = 0f;
-    public Transform tower; // Reference to the main tower
-    private Transform currentTarget; // Current target (either tower or a defender)
-    private NavMeshAgent agent; // NavMeshAgent to handle movement and pathfinding
-    public Transform shootProjectile; // Where the projectiles will spawn from
+    // Existing fields
+
+
+
+
+
+
+    public float health = 20f;               // Enemy health
+    public float maxHealth = 20f;            // Max health of the enemy
+    public float damageAmount = 10f;         // Damage amount the enemy can deal
+    public float range = 10f;                // Range within which the enemy can attack
+    public Transform tower;                  // Reference to the main tower
+    public Transform currentTarget;          // Current target (either defender or tower)
+    public GameObject projectilePrefab;      // Projectile prefab to shoot at the tower or defenders
+    public Transform shootProjectile;        // Where the projectiles will spawn from
+    public GameObject healthBarPrefab;       // Health bar prefab
+    private GameObject healthBar;            // Instance of the health bar
+    private Slider healthBarSlider;          // Slider component of the health bar
+
+    private NavMeshAgent agent;              // NavMeshAgent for pathfinding
+    private float stuckTimer = 0f;           // Timer for tracking if the enemy is stuck
+    private Vector3 lastPosition;            // Last recorded position of the enemy
+    public float stuckThreshold = 10f;       // Time in seconds before considering an enemy stuck
+    public EnemySpawner enemySpawner;        // Reference to the spawner for respawning
+    private float shootingTimer = 0f;        // Timer for shooting intervals
+    public float shootingInterval = 2f;      // Time between enemy attacks
 
     private void Start()
     {
-        shootProjectile = transform.Find("shootProjectile");
-
-        // Ensure the tower is assigned
-        if (tower == null)
-        {
-            Debug.LogError("Tower reference is not set.");
-        }
-
-        // Get or add a NavMeshAgent component to the enemy
+        // Initialize NavMeshAgent
         agent = GetComponent<NavMeshAgent>();
-        if (agent == null)
+        lastPosition = transform.position;
+
+        // Set initial target to the main tower
+        currentTarget = tower;
+        SetDestination(currentTarget);
+
+        // Instantiate the health bar prefab above the enemy
+        if (healthBarPrefab != null)
         {
-            agent = gameObject.AddComponent<NavMeshAgent>();
+            healthBar = Instantiate(healthBarPrefab, transform.position + Vector3.up * 2, Quaternion.identity, transform);
+            healthBarSlider = healthBar.GetComponentInChildren<Slider>();
+            if (healthBarSlider != null)
+            {
+                healthBarSlider.maxValue = maxHealth;
+                healthBarSlider.value = health;
+            }
+            else
+            {
+                Debug.LogError("Health bar prefab is missing a Slider component.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Health bar prefab is not assigned.");
         }
 
-        // Instantiate the health bar and set its max health
-        healthBar = Instantiate(healthBarPrefab, transform.position + Vector3.up * 2, Quaternion.identity, transform);
-        healthBarSlider = healthBar.GetComponentInChildren<Slider>();
-        healthBarSlider.maxValue = maxHealth;
-        healthBarSlider.value = health;
-
-        // Set initial destination to the tower
-        SetDestination(tower);
+        // Ensure shootProjectile is assigned or attempt to find it in the children
+        if (shootProjectile == null)
+        {
+            Transform potentialShootPoint = transform.Find("ShootPoint");
+            if (potentialShootPoint != null)
+            {
+                shootProjectile = potentialShootPoint;
+            }
+            else
+            {
+                Debug.LogWarning("ShootProjectile is not assigned and no 'ShootPoint' child was found.");
+            }
+        }
     }
 
     private void Update()
     {
-        // Null check for the agent
-        if (agent == null)
-        {
-            Debug.LogError("NavMeshAgent is missing on this enemy.");
-            return; // Exit early if the agent is null
-        }
+        // Check if the enemy is stuck and needs respawning
+        CheckMovement();
 
-        // Handle if the current target has been destroyed or is null
-        if (currentTarget == null || currentTarget.gameObject == null)
-        {
-            Debug.LogWarning("Current target has been destroyed or is null. Finding a new target.");
-            currentTarget = FindNewTarget();
-
-            // If no new target is found, stop the enemy or handle fallback behavior
-            if (currentTarget == null)
-            {
-                Debug.LogWarning("No valid target found. Stopping enemy.");
-                agent.isStopped = true; // Optional: stop the enemy if no target is found
-                return;
-            }
-        }
-
-        // Ensure destination is set and check if the agent is moving
-        if (agent.hasPath && currentTarget != null)
-        {
-            Debug.Log("Agent moving towards: " + currentTarget.name + " | Remaining Distance: " + agent.remainingDistance);
-        }
-
-        // Handle shooting logic
-        shootingTimer += Time.deltaTime;
-        if (shootingTimer >= shootingInterval)
-        {
-            ShootAtTarget();
-            shootingTimer = 0f; // Reset the shooting timer
-        }
-
-        // Continuously search for defenders to prioritize them
+        // Continuously search for defenders to attack
         FindClosestDefender();
+
+        // Handle shooting at the current target
+        shootingTimer += Time.deltaTime;
+        if (currentTarget != null && IsTargetInRange(currentTarget) && shootingTimer >= shootingInterval)
+        {
+            ShootAtTarget(currentTarget);
+            shootingTimer = 0f;  // Reset shooting timer after firing
+        }
+
+        // Handle health check
+        if (health <= 0)
+        {
+            Die();
+        }
 
         // Update health bar position to stay above the enemy
         if (healthBar != null)
         {
             healthBar.transform.position = transform.position + Vector3.up * 2;
         }
-
-        // Check if there's a defender to attack or move toward the tower
-        if (currentTarget != null && agent.remainingDistance > 0.5f)
-        {
-            SetDestination(currentTarget); // Attack defender if it's in range, else move towards the tower
-        }
     }
 
-    // Set the destination to a target (either defender or tower)
-    private void SetDestination(Transform target)
+    // Method to check if the enemy is stuck
+    private void CheckMovement()
     {
-        if (agent != null && target != null && target.gameObject != null) // Ensure the target hasn't been destroyed
-        {
-            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+        if (agent.pathPending) return;
 
-            // Only set the destination if it's far enough
-            if (distanceToTarget > 1f) // Set a minimum distance to avoid constant recalculation
+        if (agent.isPathStale)
+        {
+            RecalculatePath();
+            return;
+        }
+
+        // Check if the enemy has moved
+        if (Vector3.Distance(transform.position, lastPosition) < 0.1f && agent.velocity.magnitude < 0.1f)
+        {
+            stuckTimer += Time.deltaTime;
+
+            // If stuck for too long, respawn the enemy
+            if (stuckTimer >= stuckThreshold)
             {
-                agent.SetDestination(target.position);
-                Debug.Log("Setting destination to: " + target.name + " at position: " + target.position);
-            }
-            else
-            {
-                Debug.Log("Target is too close. Not setting a new destination.");
+                Debug.Log("Enemy is stuck for too long, respawning...");
+                Respawn();
             }
         }
         else
         {
-            Debug.LogError("NavMeshAgent or Target is null or destroyed.");
+            stuckTimer = 0f;  // Reset stuck timer if the enemy has moved
         }
+
+        lastPosition = transform.position;
     }
 
-    // Shoot a projectile at the current target
-    private void ShootAtTarget()
-    {
-        if (currentTarget != null && projectilePrefab != null)
-        {
-            // Check if the enemy is within shooting range of the target
-            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
-            if (distanceToTarget <= range) // Only shoot if within range
-            {
-                // Log the shoot position to ensure it's correct
-                Debug.Log("Shooting projectile from: " + shootProjectile.position);
-
-                // Create the projectile and shoot it at the target
-                GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
-                Debug.Log("Projectile instantiated at position: " + shootProjectile.position);
-
-                ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
-                if (projectileController != null)
-                {
-                    projectileController.SetTarget(currentTarget); // Shoot at the current target
-                }
-
-                // Check if the target is a defender
-                DefenderController defender = currentTarget.GetComponent<DefenderController>();
-                if (defender != null)
-                {
-                    defender.TakeDamage(damageAmount); // Apply damage to the defender
-                }
-                else
-                {
-                    // If it's not a defender, assume it's the tower
-                    MainTowerController towerController = currentTarget.GetComponent<MainTowerController>();
-                    if (towerController != null)
-                    {
-                        towerController.TakeDamage(damageAmount); // Apply damage to the tower
-                    }
-                }
-            }
-            else
-            {
-                Debug.Log("Enemy is not within shooting range.");
-            }
-        }
-    }
-
-    // Find the closest defender to attack
+    // Method to find and prioritize defenders within range
     private void FindClosestDefender()
     {
         Collider[] hitDefenders = Physics.OverlapSphere(transform.position, range);
@@ -481,93 +448,134 @@ public class EnemyController : MonoBehaviour
         {
             if (defenderCollider.CompareTag("Defender"))
             {
-                Transform defenderTransform = defenderCollider.transform;
-
-                // Skip destroyed defenders
-                if (defenderTransform == null || defenderTransform.gameObject == null)
-                {
-                    continue;  // Skip null or destroyed objects
-                }
-
-                float distanceToDefender = Vector3.Distance(transform.position, defenderTransform.position);
+                float distanceToDefender = Vector3.Distance(transform.position, defenderCollider.transform.position);
                 if (distanceToDefender < closestDistance)
                 {
                     closestDistance = distanceToDefender;
-                    closestDefender = defenderTransform;
+                    closestDefender = defenderCollider.transform;
                 }
             }
         }
 
-        if (closestDefender != null)
+        // If a defender is found, set it as the target; otherwise, target the tower
+        currentTarget = closestDefender != null ? closestDefender : tower;
+        SetDestination(currentTarget);  // Set path towards the current target
+    }
+
+    // Method to set the NavMeshAgent's destination
+    private void SetDestination(Transform target)
+    {
+        if (agent != null && target != null)
         {
-            currentTarget = closestDefender;
-        }
-        else
-        {
-            currentTarget = tower; // Target the tower if no defenders are found
+            agent.SetDestination(target.position);
         }
     }
 
-    // Find a new target if the current one is destroyed
-    private Transform FindNewTarget()
+    // Check if the current target is in range
+    private bool IsTargetInRange(Transform target)
     {
-        // First, try to find the closest defender
-        FindClosestDefender();
-
-        // If no defenders are found, return the tower
-        return currentTarget != null ? currentTarget : tower;
+        return Vector3.Distance(transform.position, target.position) <= range;
     }
 
-    // Take damage method
-    public void TakeDamage(float amount)
+    // Method to shoot projectiles at the current target (either defender or tower)
+    private void ShootAtTarget(Transform target)
     {
-        health -= amount;
-        healthBarSlider.value = health; // Update the health bar when taking damage
+        if (target != null && projectilePrefab != null)
+        {
+            GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
+            ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
+
+            if (projectileController != null)
+            {
+                projectileController.SetTarget(target);
+            }
+
+            // Apply damage to the defender or tower
+            if (target.CompareTag("Defender"))
+            {
+                DefenderController defender = target.GetComponent<DefenderController>();
+                if (defender != null)
+                {
+                    defender.TakeDamage(damageAmount);
+                }
+            }
+            else if (target.CompareTag("Tower"))
+            {
+                MainTowerController towerController = target.GetComponent<MainTowerController>();
+                if (towerController != null)
+                {
+                    towerController.TakeDamage(damageAmount);
+                }
+            }
+        }
+    }
+
+    // Method to handle when the enemy takes damage
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+
+        // Update the health bar slider
+        if (healthBarSlider != null)
+        {
+            healthBarSlider.value = health;
+        }
+
+        // If health drops below zero, trigger the death
         if (health <= 0)
         {
             Die();
         }
     }
 
-    // Handle the enemy's death
-    private void Die()
-    {
-        Destroy(healthBar); // Destroy the health bar when the enemy dies
-        Destroy(gameObject); // Destroy the enemy
-    }
-
-    // Helper method to check if the enemy is dead
+    // Method to check if the enemy is dead
     public bool IsDead()
     {
         return health <= 0;
     }
 
-    // Method to recalculate path (for when the NavMesh is updated)
+    // Method to handle the enemy's death
+    private void Die()
+    {
+        // Notify the spawner or enemy manager that this enemy has died
+        if (enemySpawner != null)
+        {
+            enemySpawner.OnEnemyDeath();
+        }
+
+        // Destroy the health bar when the enemy dies
+        if (healthBar != null)
+        {
+            Destroy(healthBar);
+        }
+
+        // Destroy the enemy GameObject
+        Destroy(gameObject);
+    }
+
+    // Method to handle respawning the enemy if it gets stuck
+    private void Respawn()
+    {
+        // Notify the spawner that the enemy is being respawned
+        if (enemySpawner != null)
+        {
+            enemySpawner.RespawnEnemy(gameObject);
+        }
+
+        // Destroy the current enemy instance
+        Destroy(gameObject);
+    }
+
+    // Method to recalculate the enemy's path if necessary
     public void RecalculatePath()
     {
-        // Check if the NavMeshAgent and currentTarget are valid
-        if (agent != null)
+        if (agent != null && currentTarget != null)
         {
-            // If the currentTarget is null or destroyed, find a new valid target
-            if (currentTarget == null || currentTarget.gameObject == null)
-            {
-                Debug.LogWarning("Current target is null or destroyed. Finding a new target.");
-                currentTarget = FindNewTarget(); // Use your existing FindNewTarget method
-            }
-
-            // If a valid target is found, set the agent's destination
-            if (currentTarget != null)
-            {
-                agent.SetDestination(currentTarget.position);
-                Debug.Log("Enemy recalculated path to target: " + currentTarget.name);
-            }
-            else
-            {
-                Debug.LogWarning("No valid target found. Stopping enemy.");
-                agent.isStopped = true; // Stop the enemy if no target exists
-            }
+            agent.SetDestination(currentTarget.position);
         }
     }
+
+
 }
 
 
