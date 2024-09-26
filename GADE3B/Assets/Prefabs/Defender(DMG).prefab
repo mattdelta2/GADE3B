@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3169277031660254568}
-  - component: {fileID: 6485779850046286594}
   - component: {fileID: 7110136892394552413}
   - component: {fileID: 6172210299985789980}
+  - component: {fileID: -242395953991005787}
   m_Layer: 0
   m_Name: Defender(DMG)
   m_TagString: Defender
@@ -37,27 +37,6 @@ Transform:
   - {fileID: 4344245159598534090}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6485779850046286594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6626623205242957485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  range: 90
-  damage: 8
-  shootingInterval: 1.5
-  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
-  health: 60
-  maxHealth: 60
-  healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
-  shootProjectile: {fileID: 0}
 --- !u!208 &7110136892394552413
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -95,6 +74,27 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-242395953991005787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6626623205242957485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b63a00654f16c1a439b0dd441b4de0c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 15
+  damage: 20
+  shootingInterval: 1.5
+  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
+  health: 50
+  maxHealth: 50
+  healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
+  target: {fileID: 0}
+  shootProjectile: {fileID: 0}
 --- !u!1 &7582764432183811133
 GameObject:
   m_ObjectHideFlags: 0

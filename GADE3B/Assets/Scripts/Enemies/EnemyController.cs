@@ -324,7 +324,7 @@ public class EnemyController : MonoBehaviour
     private GameObject healthBar;            // Instance of the health bar
     private Slider healthBarSlider;          // Slider component of the health bar
 
-    private NavMeshAgent agent;              // NavMeshAgent for pathfinding
+    protected NavMeshAgent agent;              // NavMeshAgent for pathfinding
     private float stuckTimer = 0f;           // Timer for tracking if the enemy is stuck
     private Vector3 lastPosition;            // Last recorded position of the enemy
     public float stuckThreshold = 10f;       // Time in seconds before considering an enemy stuck
@@ -332,7 +332,7 @@ public class EnemyController : MonoBehaviour
     private float shootingTimer = 0f;        // Timer for shooting intervals
     public float shootingInterval = 2f;      // Time between enemy attacks
 
-    private void Start()
+    protected virtual void Start()
     {
         // Initialize NavMeshAgent
         agent = GetComponent<NavMeshAgent>();
@@ -377,7 +377,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         // Check if the enemy is stuck and needs respawning
         CheckMovement();

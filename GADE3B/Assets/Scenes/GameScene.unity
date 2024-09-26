@@ -288,6 +288,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefabs:
   - {fileID: 841328676367375481, guid: d18bd9734037df24fae9546570400dcb, type: 3}
+  - {fileID: 2496269066903493894, guid: 93776b0547be4f6469cfd6c06d937db7, type: 3}
+  - {fileID: 2451451260638597888, guid: bfd9823f9725b2546b2cc15dd3b4d81f, type: 3}
   terrain: {fileID: 1106253521}
   mainTowerController: {fileID: 0}
   spawnInterval: 1

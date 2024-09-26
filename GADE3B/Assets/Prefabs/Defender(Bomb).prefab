@@ -145,9 +145,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 928628667117985224}
-  - component: {fileID: 271560913826404563}
   - component: {fileID: 5638771232441124114}
   - component: {fileID: 5944964504409066875}
+  - component: {fileID: -7895127905223546701}
   m_Layer: 0
   m_Name: Defender(Bomb)
   m_TagString: Defender
@@ -173,27 +173,6 @@ Transform:
   - {fileID: 3635912537652919361}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &271560913826404563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7504559773371659166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  range: 90
-  damage: 8
-  shootingInterval: 1.5
-  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
-  health: 60
-  maxHealth: 60
-  healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
-  shootProjectile: {fileID: 0}
 --- !u!208 &5638771232441124114
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -231,6 +210,29 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-7895127905223546701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7504559773371659166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 642359b835e538c4dae38a3a75c5d45e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 15
+  damage: 20
+  shootingInterval: 1.5
+  projectilePrefab: {fileID: 0}
+  health: 50
+  maxHealth: 50
+  healthBarPrefab: {fileID: 0}
+  target: {fileID: 0}
+  shootProjectile: {fileID: 0}
+  explosionRadius: 5
+  explosionEffect: {fileID: 0}
 --- !u!1001 &3891077423806913450
 PrefabInstance:
   m_ObjectHideFlags: 0

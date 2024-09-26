@@ -20,7 +20,7 @@ public class DefenderController : MonoBehaviour
     public Transform target; // Current enemy target
     public Transform shootProjectile;
 
-    private void Start()
+    protected virtual void Start()
     {
         shootProjectile = transform.Find("shootProjectile");
 
@@ -31,16 +31,21 @@ public class DefenderController : MonoBehaviour
         healthBarSlider.value = health;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         shootingTimer += Time.deltaTime;
-        if (shootingTimer >= shootingInterval)
+
+        if (shootingTimer >= shootingInterval && target != null)
         {
             ShootAtEnemy();
             shootingTimer = 0f; // Reset the timer after shooting
         }
 
-        FindClosestEnemy(); // Continuously search for enemies
+        // If the defender doesn't have a forced target, find the closest enemy
+        if (target == null)
+        {
+            FindClosestEnemy(); // Continuously search for enemies
+        }
 
         // Update health bar position to stay above the defender
         if (healthBar != null)
@@ -49,31 +54,24 @@ public class DefenderController : MonoBehaviour
         }
     }
 
+    // Method to forcefully set a target (e.g., for taunt behavior)
+    public virtual void TargetEnemy(EnemyController enemy)
+    {
+        target = enemy.transform;
+        Debug.Log("Defender is now targeting the taunting enemy: " + enemy.name);
+    }
+
     // Method to shoot at an enemy
     private void ShootAtEnemy()
     {
-
         if (target != null && projectilePrefab != null)
         {
-            // Create the projectile and launch it at the enemy
             GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
-
-            // Ensure the projectile faces the enemy
             projectile.transform.LookAt(target.position);
-
-            // Optionally, adjust the rotation if the projectile is not facing correctly (depends on your projectile model)
-            // For example, if your projectile needs to rotate along a certain axis:
-            // projectile.transform.Rotate(90, 0, 0); // Adjust the values as per your model orientation
-
             ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
             if (projectileController != null)
             {
-                // Set the target for the projectile
                 projectileController.SetTarget(target);
-            }
-            else
-            {
-                Debug.LogError("ProjectileController component missing on projectile prefab.");
             }
         }
     }
@@ -102,7 +100,7 @@ public class DefenderController : MonoBehaviour
     }
 
     // Method for the defender to take damage
-    public void TakeDamage(float amount)
+    public virtual void TakeDamage(float amount)
     {
         health -= amount;
         healthBarSlider.value = health; // Update health bar when taking damage
@@ -113,12 +111,9 @@ public class DefenderController : MonoBehaviour
     }
 
     // Method to handle defender's death
-    private void Die()
+    protected virtual void Die()
     {
         Destroy(healthBar); // Destroy the health bar when the defender dies
         Destroy(gameObject); // Destroy the defender when health reaches zero
     }
 }
-
-
-
