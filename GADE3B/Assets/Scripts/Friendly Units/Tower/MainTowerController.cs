@@ -248,19 +248,18 @@ public class MainTowerController : MonoBehaviour
         // Instantiate the projectile at the spawn point
         GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
 
+        // Calculate the direction to the target
+        Vector3 direction = (target.position - projectile.transform.position).normalized;
+
+        // Make the projectile look at the target, aligning the top of the bullet with the target
+        projectile.transform.LookAt(target.position, Vector3.up);  // Adjust the 'up' vector to keep the top of the bullet upwards
+
         // Check if the projectile has the ProjectileController script
         ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
 
         if (projectileController != null)
         {
-            // Make the projectile look at the target when it's instantiated
-            projectile.transform.LookAt(target.position);
-
-            // If needed, adjust the rotation to align the bullet's forward or top correctly
-            // For example, if your bullet's top is facing up and needs to be rotated downwards:
-            // projectile.transform.Rotate(90, 0, 0); // Adjust based on your bullet model's orientation
-
-            // Set the target for the projectile
+            // Set the target and damage for the projectile
             projectileController.SetTarget(target, damage);
         }
         else
@@ -268,6 +267,8 @@ public class MainTowerController : MonoBehaviour
             Debug.LogError("ProjectileController component missing on projectile prefab.");
         }
     }
+
+
 
 
     public void TakeDamage(float damageAmount)
@@ -331,7 +332,7 @@ public class MainTowerController : MonoBehaviour
         SceneManager.LoadScene("EndScene");
         Debug.Log("MainTower down");
         Destroy(gameObject);
-        
+
     }
 
     public bool IsDead()

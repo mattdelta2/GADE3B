@@ -188,9 +188,9 @@ MonoBehaviour:
   terrain: {fileID: 0}
   projectilePrefab: {fileID: 7713831968730646808, guid: ee39de88fb575ac48b41316901667222, type: 3}
   healthBarPrefab: {fileID: 819151322862545898, guid: d2efdd4ce47c1104ba4793c73695744c, type: 3}
-  shootingRange: 50
+  shootingRange: 65
   damage: 10
-  shootingInterval: 1.8
+  shootingInterval: 1.6
   maxHealth: 100
   projectileSpawnPoint: {fileID: 6041554881634536643}
 --- !u!1001 &7720286113496273540

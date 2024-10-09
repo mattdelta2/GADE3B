@@ -228,7 +228,7 @@ MonoBehaviour:
   health: 20
   maxHealth: 20
   damageAmount: 10
-  range: 10
+  range: 20
   tower: {fileID: 0}
   currentTarget: {fileID: 0}
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}

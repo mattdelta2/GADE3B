@@ -50,10 +50,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864b8f812010ad041923ef2e688cf150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 30
-  maxHealth: 30
+  health: 20
+  maxHealth: 20
   damageAmount: 5
-  range: 45
+  range: 20
   tower: {fileID: 0}
   currentTarget: {fileID: 0}
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}

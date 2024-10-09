@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7110136892394552413}
   - component: {fileID: 6172210299985789980}
   - component: {fileID: -242395953991005787}
+  - component: {fileID: -7561568215060766294}
   m_Layer: 0
   m_Name: Defender(DMG)
   m_TagString: Defender
@@ -81,15 +82,36 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6626623205242957485}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b63a00654f16c1a439b0dd441b4de0c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 15
+  range: 65
+  damage: 25
+  shootingInterval: 0.5
+  projectilePrefab: {fileID: 4878657982279946229, guid: 24128214896972c4eaca11aa4900e061, type: 3}
+  health: 50
+  maxHealth: 50
+  healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
+  target: {fileID: 0}
+  shootProjectile: {fileID: 3094126515371498983}
+--- !u!114 &-7561568215060766294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6626623205242957485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 60
   damage: 20
   shootingInterval: 1.5
-  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
+  projectilePrefab: {fileID: 4878657982279946229, guid: 24128214896972c4eaca11aa4900e061, type: 3}
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}

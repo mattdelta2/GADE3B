@@ -4,15 +4,16 @@ public class ProjectileController : MonoBehaviour
 {
     public float speed = 10f;
     private Transform target;
-    private float damage;  // Damage that will be inherited from the defender
+    public float damage = 10f;  // Damage dealt by the projectile
+    public Transform bulletTip; // Reference to the "tip" of the bullet (empty GameObject)
 
     private EnemyController targetEnemy;  // Cache for the EnemyController of the target
 
-    // Set the target and damage for the projectile
+    // Set the target for the projectile
     public void SetTarget(Transform targetTransform, float damageValue)
     {
         target = targetTransform;
-        damage = damageValue;  // Set the damage from the defender
+        damage = damageValue;
         if (target != null)
         {
             targetEnemy = target.GetComponent<EnemyController>();
@@ -28,46 +29,36 @@ public class ProjectileController : MonoBehaviour
             return;
         }
 
-        // Move towards the target using Time.deltaTime for consistent speed
+        // Move towards the target if it's still valid
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        float distanceThisFrame = speed * Time.deltaTime;
 
-        // Rotate projectile to face the target if necessary
-        if (direction != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(direction);
-        }
+        // Rotate the bullet tip to face the target
+        bulletTip.LookAt(target);  // Ensure that the bulletTip (empty) always faces the target
+
+        // Move the projectile towards the target
+        transform.Translate(direction * distanceThisFrame, Space.World);
 
         // Check if the projectile has reached the target
-        if (Vector3.Distance(transform.position, target.position) < 0.1f)
+        if (Vector3.Distance(transform.position, target.position) <= distanceThisFrame)
         {
-            HitTarget();  // Handle hitting the target
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        // Ensure that the projectile damages enemies upon collision
-        if (other.CompareTag("Enemy"))
-        {
-            EnemyController enemy = other.GetComponent<EnemyController>();
-            if (enemy != null)
-            {
-                HitTarget();  // Apply damage and destroy the projectile
-            }
+            HitTarget(); // Handle what happens when the projectile reaches the target
         }
     }
 
     private void HitTarget()
     {
-        // Apply damage to the target
-        if (targetEnemy != null)
+        if (target != null)
         {
-            targetEnemy.TakeDamage(damage);  // Use inherited damage value
+            // Apply damage to the target
+            EnemyController enemy = target.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
         }
 
-        // Optionally add explosion effect here if needed
-
-        Destroy(gameObject);  // Destroy the projectile after hitting the target
+        // Destroy the projectile after hitting the target
+        Destroy(gameObject);
     }
 }

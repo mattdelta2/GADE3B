@@ -154,15 +154,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 15
-  damage: 8
-  shootingInterval: 1.5
+  range: 50
+  damage: 10
+  shootingInterval: 0.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 60
   maxHealth: 60
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
   shootingTimer: 0
-  target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
+  target: {fileID: 0}
   shootProjectile: {fileID: 5095959944007004999}
 --- !u!208 &2026137672002777959
 NavMeshObstacle:

@@ -222,17 +222,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 642359b835e538c4dae38a3a75c5d45e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 15
+  range: 60
   damage: 20
-  shootingInterval: 1.5
-  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
+  shootingInterval: 0.5
+  projectilePrefab: {fileID: 0}
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
   shootingTimer: 0
   target: {fileID: 0}
   shootProjectile: {fileID: 6784693881148765987}
-  bombProjectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
+  bombProjectilePrefab: {fileID: 4878657982279946229, guid: b3a475ed21375c14cb15fcd6363da345, type: 3}
   shootPoint: {fileID: 6784693881148765987}
   bombExplosionRadius: 5
   bombDamage: 50

@@ -5,20 +5,23 @@ using UnityEngine.UI;
 
 public class DefenderController : MonoBehaviour
 {
-    public float range = 15f; // Range at which the defender can shoot
-    public float damage = 20f; // Damage dealt by the defender's projectiles
-    public float shootingInterval = 1.5f; // Time between shots
+    [Header("Combat Settings")]
+    public float range; // Range at which the defender can shoot, set in the Inspector
+    public float damage; // Damage dealt by the defender's projectiles, set in the Inspector
+    public float shootingInterval = 1.5f; // Time between shots, can be set in the Inspector
     public GameObject projectilePrefab; // Projectile prefab to be shot at enemies
 
+    [Header("Health Settings")]
     public float health = 50f; // Health of the defender
-    public float maxHealth = 50f; // Max health for health bar
+    public float maxHealth = 50f; // Max health for health bar, set in the Inspector
     public GameObject healthBarPrefab; // Health bar prefab
-    private GameObject healthBar; // Instance of the health bar
-    private Slider healthBarSlider; // Reference to the slider component
 
     public float shootingTimer = 0f;
     public Transform target; // Current enemy target
-    public Transform shootProjectile;
+    public Transform shootProjectile; // Where the projectile is shot from
+
+    private GameObject healthBar; // Instance of the health bar
+    private Slider healthBarSlider; // Reference to the slider component
 
     protected virtual void Start()
     {
@@ -37,7 +40,7 @@ public class DefenderController : MonoBehaviour
 
         if (shootingTimer >= shootingInterval && target != null)
         {
-            ShootAtEnemy();
+            ShootAtEnemies();
             shootingTimer = 0f; // Reset the timer after shooting
         }
 
@@ -54,33 +57,11 @@ public class DefenderController : MonoBehaviour
         }
     }
 
-    // Method to forcefully set a target (e.g., for taunt behavior)
-    public virtual void TargetEnemy(EnemyController enemy)
-    {
-        target = enemy.transform;
-        Debug.Log("Defender is now targeting the taunting enemy: " + enemy.name);
-    }
-
-    // Method to shoot at an enemy
-    private void ShootAtEnemy()
-    {
-        if (target != null && projectilePrefab != null)
-        {
-            GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
-            projectile.transform.LookAt(target.position);
-            ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
-            if (projectileController != null)
-            {
-                // Pass both the target and the damage value from the defender
-                projectileController.SetTarget(target, damage);
-            }
-        }
-    }
-
     // Method to find the closest enemy in range
     private void FindClosestEnemy()
     {
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
+        Debug.Log("Defender range: " + range + " | Detected enemies: " + hitEnemies.Length); // Add this for debugging
         float closestDistance = Mathf.Infinity;
         Transform closestEnemy = null;
 
@@ -89,6 +70,7 @@ public class DefenderController : MonoBehaviour
             if (enemyCollider.CompareTag("Enemy"))
             {
                 float distanceToEnemy = Vector3.Distance(transform.position, enemyCollider.transform.position);
+                Debug.Log("Enemy detected at distance: " + distanceToEnemy); // Add this for debugging
                 if (distanceToEnemy < closestDistance)
                 {
                     closestDistance = distanceToEnemy;
@@ -99,6 +81,42 @@ public class DefenderController : MonoBehaviour
 
         target = closestEnemy;
     }
+
+    // Method to shoot at an enemy
+    private void ShootAtEnemies()
+    {
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
+        bool shooting = false; // Flag to check if any enemies are hit
+
+        foreach (Collider enemyCollider in hitEnemies)
+        {
+            if (enemyCollider.CompareTag("Enemy")) // Ensure the collider is an enemy
+            {
+                shooting = true; // Set flag to true if an enemy is hit
+
+                // Launch projectile at the first enemy found
+                LaunchProjectile(enemyCollider.transform);
+                break; // Fire only one projectile per interval
+            }
+        }
+
+        if (shooting)
+        {
+            Debug.Log("Tower is shooting at enemies.");
+        }
+    }
+    private void LaunchProjectile(Transform target)
+    {
+        GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
+        ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
+
+        if (projectileController != null)
+        {
+            projectile.transform.LookAt(target.position);
+            projectileController.SetTarget(target, damage);
+        }
+    }
+
 
     // Method for the defender to take damage
     public virtual void TakeDamage(float amount)
@@ -116,5 +134,11 @@ public class DefenderController : MonoBehaviour
     {
         Destroy(healthBar); // Destroy the health bar when the defender dies
         Destroy(gameObject); // Destroy the defender when health reaches zero
+    }
+
+    public virtual void TargetEnemy(EnemyController enemy)
+    {
+        target = enemy.transform;
+        Debug.Log("Defender is now targeting the taunting enemy: " + enemy.name);
     }
 }
