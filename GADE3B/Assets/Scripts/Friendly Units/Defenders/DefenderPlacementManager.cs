@@ -92,56 +92,105 @@ public class DefenderPlacementManager : MonoBehaviour
     }
     */
 
-    public GameObject defenderPrefab; // Set this in the inspector
-    public LayerMask terrainLayer; // Set the terrain layer in the inspector
-    public Camera mainCamera; // Reference to the main camera
-    public GoldManager gameManager; // Reference to the GameManager which controls the gold
-    public NavMeshSurface navMeshSurface; // Reference to the NavMeshSurface used for full rebaking
-    public PathManager pathManager; // Reference to the PathManager for predetermined positions
+    public GameObject[] defenderPrefabs;    // Array of all defender prefabs
+    public LayerMask terrainLayer;          // Set the terrain layer in the inspector
+    public Camera mainCamera;               // Reference to the main camera
+    public GoldManager gameManager;         // Reference to the GameManager which controls the gold
+    public NavMeshSurface navMeshSurface;   // Reference to the NavMeshSurface used for full rebaking
+    public PathManager pathManager;         // Reference to the PathManager for predetermined positions
     public float placementThreshold = 2.0f; // Max distance from a valid position to allow placement
-    public bool isPlacing = false; // Track whether we're in placement mode
 
-    void Update()
+    private GameObject selectedDefenderPrefab; // The currently selected defender prefab
+    public bool isPlacing = false;          // Track whether we're in placement mode
+
+    public GameObject defenderSelectionUI;  // Reference to the UI containing the defender selection buttons
+
+    private void Update()
     {
-        if (isPlacing)
+        // If we're in placement mode and a defender has been selected
+        if (isPlacing && selectedDefenderPrefab != null)
         {
             if (Input.GetMouseButtonDown(0)) // Left mouse button
             {
-                TryPlaceDefender();
+                TryPlaceDefender(); // Try to place the selected defender
             }
         }
     }
 
+    // Method to enter/exit placement mode
     public void TogglePlacementMode(bool toggle)
     {
         isPlacing = toggle;
+
+        // Show the defender selection UI only when in placement mode
+        if (defenderSelectionUI != null)
+        {
+            defenderSelectionUI.SetActive(isPlacing); // Show or hide the selection UI
+        }
+
         Time.timeScale = isPlacing ? 0.1f : 1.0f; // Slow down time when in placement mode
+
+        if (!isPlacing)
+        {
+            selectedDefenderPrefab = null; // Clear the selected defender when exiting placement mode
+        }
     }
 
+    // Method to select the defender (called by the UI buttons)
+    public void SelectDefender(int defenderIndex)
+    {
+        Debug.Log("SelectDefender called with index: " + defenderIndex);
+
+        if (defenderPrefabs == null || defenderPrefabs.Length == 0)
+        {
+            Debug.LogError("Defender prefabs array is not assigned or empty.");
+            return;
+        }
+
+        if (defenderIndex >= 0 && defenderIndex < defenderPrefabs.Length)
+        {
+            selectedDefenderPrefab = defenderPrefabs[defenderIndex];
+            Debug.Log("Defender selected: " + selectedDefenderPrefab.name);
+        }
+        else
+        {
+            Debug.LogError("Invalid defender index: " + defenderIndex);
+        }
+    }
+
+    // Method to try placing the selected defender
     private void TryPlaceDefender()
     {
+        if (selectedDefenderPrefab == null)
+        {
+            Debug.LogError("No defender selected.");
+            return;
+        }
+
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
+
         if (Physics.Raycast(ray, out hit, Mathf.Infinity, terrainLayer))
         {
             Vector3 spawnPosition = hit.point;
 
-            // Check if the spawn position is near any valid defender positions
+            // Check if the spawn position is valid
             if (IsValidDefenderPosition(spawnPosition))
             {
                 PlaceDefenderAtPosition(spawnPosition);
             }
             else
             {
-                Debug.LogError("Invalid defender placement position. Must be near a predetermined location.");
+                Debug.LogError("Invalid defender placement position.");
             }
         }
         else
         {
-            Debug.LogError("Raycast did not hit the terrain layer. Check layer settings.");
+            Debug.LogError("Raycast did not hit the terrain layer.");
         }
     }
 
+    // Helper to check if the defender's position is valid
     private bool IsValidDefenderPosition(Vector3 position)
     {
         if (pathManager == null)
@@ -158,34 +207,33 @@ public class DefenderPlacementManager : MonoBehaviour
             }
         }
 
-        return false; // Not close enough to a valid defender position
+        return false;
     }
 
+    // Place the selected defender at the given position
     private void PlaceDefenderAtPosition(Vector3 spawnPosition)
     {
-        // Spend gold to confirm placement
-        if (gameManager.SpendGold(5)) // Check if player has enough gold
+        if (gameManager.SpendGold(5)) // Deduct gold if the player has enough
         {
-            // Only place defender if SpendGold returns true
-            spawnPosition.y += 0.5f; // Adjust height if necessary
-            GameObject defender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
+            spawnPosition.y += 0.5f; // Adjust height
 
-            // Add NavMeshObstacle if it doesn't already exist
+            GameObject defender = Instantiate(selectedDefenderPrefab, spawnPosition, Quaternion.identity);
+
+            // Add NavMeshObstacle to the placed defender
             if (!defender.GetComponent<NavMeshObstacle>())
             {
                 NavMeshObstacle navObstacle = defender.AddComponent<NavMeshObstacle>();
-                navObstacle.carving = true; // Enable carving for dynamic obstacle avoidance
+                navObstacle.carving = true;
             }
 
-            // Notify the PathManager about the new defender position
+            // Notify the PathManager of the new defender position
             pathManager.AddDefenderPosition(defender.transform.position);
 
-            // Trigger NavMesh rebake after defender placement
+            // Rebuild the NavMesh
             StartCoroutine(RebakeNavMeshAndRecalculatePaths());
 
-            // Allow placement of more defenders if necessary
-            isPlacing = true; // Keep placement mode active
-            Time.timeScale = 0.1f; // Keep the slowed-down time active for more placements
+            // Allow placement mode to stay active for more placements
+            selectedDefenderPrefab = null; // Clear the selection for the next defender
         }
         else
         {
@@ -195,30 +243,24 @@ public class DefenderPlacementManager : MonoBehaviour
 
     private IEnumerator RebakeNavMeshAndRecalculatePaths()
     {
-        // Trigger the full NavMesh rebake
         if (navMeshSurface != null)
         {
             navMeshSurface.BuildNavMesh(); // Rebake the entire NavMesh
-            Debug.Log("NavMesh re-baked after defender placement.");
         }
 
-        // Delay to ensure the NavMesh is fully updated before recalculating paths
-        yield return new WaitForSecondsRealtime(0.1f); // Small delay to allow NavMesh update to complete
+        yield return new WaitForSecondsRealtime(0.1f); // Small delay
 
-        // Notify all enemies to recalculate their paths
         RecalculateEnemyPaths();
     }
 
     private void RecalculateEnemyPaths()
     {
-        // Find all active enemies and recalculate their paths
         EnemyController[] enemies = FindObjectsOfType<EnemyController>();
         foreach (EnemyController enemy in enemies)
         {
             if (enemy != null)
             {
-                enemy.RecalculatePath(); // Ask enemies to recalculate their path
-                Debug.Log("Enemy recalculated path: " + enemy.name);
+                enemy.RecalculatePath(); // Update enemy pathfinding
             }
         }
     }

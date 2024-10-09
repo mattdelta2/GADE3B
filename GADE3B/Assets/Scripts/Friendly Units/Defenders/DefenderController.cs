@@ -16,7 +16,7 @@ public class DefenderController : MonoBehaviour
     private GameObject healthBar; // Instance of the health bar
     private Slider healthBarSlider; // Reference to the slider component
 
-    private float shootingTimer = 0f;
+    public float shootingTimer = 0f;
     public Transform target; // Current enemy target
     public Transform shootProjectile;
 
@@ -71,7 +71,8 @@ public class DefenderController : MonoBehaviour
             ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
             if (projectileController != null)
             {
-                projectileController.SetTarget(target);
+                // Pass both the target and the damage value from the defender
+                projectileController.SetTarget(target, damage);
             }
         }
     }

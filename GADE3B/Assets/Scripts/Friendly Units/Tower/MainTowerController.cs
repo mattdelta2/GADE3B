@@ -261,7 +261,7 @@ public class MainTowerController : MonoBehaviour
             // projectile.transform.Rotate(90, 0, 0); // Adjust based on your bullet model's orientation
 
             // Set the target for the projectile
-            projectileController.SetTarget(target);
+            projectileController.SetTarget(target, damage);
         }
         else
         {

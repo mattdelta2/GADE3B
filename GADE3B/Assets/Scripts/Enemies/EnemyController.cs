@@ -487,7 +487,7 @@ public class EnemyController : MonoBehaviour
 
             if (projectileController != null)
             {
-                projectileController.SetTarget(target);
+                projectileController.SetTarget(target, damageAmount);
             }
 
             // Apply damage to the defender or tower

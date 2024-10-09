@@ -4,14 +4,15 @@ public class ProjectileController : MonoBehaviour
 {
     public float speed = 10f;
     private Transform target;
-    public float damage = 10f;  // Damage dealt by the projectile
+    private float damage;  // Damage that will be inherited from the defender
 
     private EnemyController targetEnemy;  // Cache for the EnemyController of the target
 
-    // Set the target for the projectile
-    public void SetTarget(Transform targetTransform)
+    // Set the target and damage for the projectile
+    public void SetTarget(Transform targetTransform, float damageValue)
     {
         target = targetTransform;
+        damage = damageValue;  // Set the damage from the defender
         if (target != null)
         {
             targetEnemy = target.GetComponent<EnemyController>();
@@ -27,28 +28,46 @@ public class ProjectileController : MonoBehaviour
             return;
         }
 
-        // Move towards the target if it's still valid
+        // Move towards the target using Time.deltaTime for consistent speed
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed;
-        transform.rotation = Quaternion.LookRotation(direction);
+        transform.position += direction * speed * Time.deltaTime;
+
+        // Rotate projectile to face the target if necessary
+        if (direction != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
 
         // Check if the projectile has reached the target
         if (Vector3.Distance(transform.position, target.position) < 0.1f)
         {
-            Destroy(gameObject);  // Destroy the projectile when it reaches the target
+            HitTarget();  // Handle hitting the target
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
+        // Ensure that the projectile damages enemies upon collision
         if (other.CompareTag("Enemy"))
         {
             EnemyController enemy = other.GetComponent<EnemyController>();
             if (enemy != null)
             {
-                enemy.TakeDamage(damage);
-                Destroy(gameObject);  // Destroy the projectile after damaging the enemy
+                HitTarget();  // Apply damage and destroy the projectile
             }
         }
+    }
+
+    private void HitTarget()
+    {
+        // Apply damage to the target
+        if (targetEnemy != null)
+        {
+            targetEnemy.TakeDamage(damage);  // Use inherited damage value
+        }
+
+        // Optionally add explosion effect here if needed
+
+        Destroy(gameObject);  // Destroy the projectile after hitting the target
     }
 }

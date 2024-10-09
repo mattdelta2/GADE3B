@@ -158,7 +158,7 @@ MonoBehaviour:
   tower: {fileID: 0}
   currentTarget: {fileID: 0}
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
-  shootProjectile: {fileID: 6682431239539631990, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
+  shootProjectile: {fileID: 3341881597849600066}
   healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
   stuckThreshold: 10
   enemySpawner: {fileID: 0}

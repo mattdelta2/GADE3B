@@ -192,7 +192,7 @@ MonoBehaviour:
   damage: 10
   shootingInterval: 1.8
   maxHealth: 100
-  projectileSpawnPoint: {fileID: 0}
+  projectileSpawnPoint: {fileID: 6041554881634536643}
 --- !u!1001 &7720286113496273540
 PrefabInstance:
   m_ObjectHideFlags: 0

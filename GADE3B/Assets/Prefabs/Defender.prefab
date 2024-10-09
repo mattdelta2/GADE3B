@@ -154,15 +154,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 90
+  range: 15
   damage: 8
   shootingInterval: 1.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 60
   maxHealth: 60
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
+  shootingTimer: 0
   target: {fileID: 6010836534172940670, guid: d18bd9734037df24fae9546570400dcb, type: 3}
-  shootProjectile: {fileID: 0}
+  shootProjectile: {fileID: 5095959944007004999}
 --- !u!208 &2026137672002777959
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -299,6 +300,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8356282736339673317, guid: d84f0b2b5bb40084d9cead49d750ad1d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1d61119f66638a646bdbfc01eeef8ead, type: 2}
+    - target: {fileID: 8967512418776954145, guid: d84f0b2b5bb40084d9cead49d750ad1d, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1d61119f66638a646bdbfc01eeef8ead, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

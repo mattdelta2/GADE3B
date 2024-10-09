@@ -225,14 +225,18 @@ MonoBehaviour:
   range: 15
   damage: 20
   shootingInterval: 1.5
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 50
   maxHealth: 50
-  healthBarPrefab: {fileID: 0}
+  healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
+  shootingTimer: 0
   target: {fileID: 0}
-  shootProjectile: {fileID: 0}
-  explosionRadius: 5
-  explosionEffect: {fileID: 0}
+  shootProjectile: {fileID: 6784693881148765987}
+  bombProjectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
+  shootPoint: {fileID: 6784693881148765987}
+  bombExplosionRadius: 5
+  bombDamage: 50
+  speed: 10
 --- !u!1001 &3891077423806913450
 PrefabInstance:
   m_ObjectHideFlags: 0
