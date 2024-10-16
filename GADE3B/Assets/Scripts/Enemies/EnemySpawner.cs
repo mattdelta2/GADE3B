@@ -313,18 +313,34 @@ public class EnemySpawner : MonoBehaviour
         spawnPoints.Clear();
         Vector3 terrainSize = terrain.terrainData.size;
 
-        // Generate random points around the main tower
-        Vector3 towerPosition = mainTowerController.transform.position;
-        int numberOfSpawnPoints = 8;  // Customize the number of spawn points
+        // Define a buffer zone around the edges where enemies can spawn
+        float buffer = 10f; // Adjust this value to control how close to the edge enemies can spawn
+
+        // Number of spawn points you want to generate
+        int numberOfSpawnPoints = 8;
 
         for (int i = 0; i < numberOfSpawnPoints; i++)
         {
-            // Generate random direction and distance
-            Vector3 randomDirection = Random.insideUnitSphere * terrainSize.x * 0.5f;
-            randomDirection.y = 0;  // Keep on the ground level
-            Vector3 spawnPosition = towerPosition + randomDirection;
+            // Randomly choose whether to spawn on the left/right or top/bottom edges
+            bool isHorizontalEdge = Random.value > 0.5f;
+            Vector3 spawnPosition;
 
-            // Adjust spawn position to be on the terrain
+            if (isHorizontalEdge)
+            {
+                // Spawn on the left or right edge
+                float xPosition = Random.value > 0.5f ? buffer : terrainSize.x - buffer;
+                float zPosition = Random.Range(buffer, terrainSize.z - buffer);
+                spawnPosition = new Vector3(xPosition, 0, zPosition);
+            }
+            else
+            {
+                // Spawn on the top or bottom edge
+                float xPosition = Random.Range(buffer, terrainSize.x - buffer);
+                float zPosition = Random.value > 0.5f ? buffer : terrainSize.z - buffer;
+                spawnPosition = new Vector3(xPosition, 0, zPosition);
+            }
+
+            // Adjust the spawn position to be on the terrain's surface
             float terrainHeight = terrain.SampleHeight(spawnPosition);
             spawnPosition.y = terrainHeight;
 
@@ -335,8 +351,9 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
-        Debug.Log("Spawn points generated: " + spawnPoints.Count);
+        Debug.Log("Spawn points generated near the edges: " + spawnPoints.Count);
     }
+
 
     public void StartSpawning()
     {
