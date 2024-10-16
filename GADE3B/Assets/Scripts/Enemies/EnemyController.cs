@@ -444,6 +444,7 @@ public class EnemyController : MonoBehaviour
         float closestDistance = Mathf.Infinity;
         Transform closestDefender = null;
 
+        // Find the closest defender within range
         foreach (Collider defenderCollider in hitDefenders)
         {
             if (defenderCollider.CompareTag("Defender"))
@@ -457,9 +458,17 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // If a defender is found, set it as the target; otherwise, target the tower
-        currentTarget = closestDefender != null ? closestDefender : tower;
-        SetDestination(currentTarget);  // Set path towards the current target
+        // Set the target to the closest defender if found, otherwise fallback to the tower
+        if (closestDefender != null)
+        {
+            currentTarget = closestDefender;
+            SetDestination(currentTarget);
+        }
+        else
+        {
+            currentTarget = tower;
+            SetDestination(currentTarget);
+        }
     }
 
     // Method to set the NavMeshAgent's destination

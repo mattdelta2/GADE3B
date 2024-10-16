@@ -38,13 +38,23 @@ public class DefenderController : MonoBehaviour
     {
         shootingTimer += Time.deltaTime;
 
+        // Shoot at the target if it's time to shoot and the target is in range
         if (shootingTimer >= shootingInterval && target != null)
         {
-            ShootAtEnemies();
-            shootingTimer = 0f; // Reset the timer after shooting
+            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+            if (distanceToTarget <= range)
+            {
+                ShootAtEnemy();
+                shootingTimer = 0f; // Reset the timer after shooting
+            }
+            else
+            {
+                // Target is out of range, find a new one
+                target = null;
+            }
         }
 
-        // If the defender doesn't have a forced target, find the closest enemy
+        // If the defender doesn't have a target, find the closest enemy
         if (target == null)
         {
             FindClosestEnemy(); // Continuously search for enemies
@@ -61,7 +71,6 @@ public class DefenderController : MonoBehaviour
     private void FindClosestEnemy()
     {
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
-        Debug.Log("Defender range: " + range + " | Detected enemies: " + hitEnemies.Length); // Add this for debugging
         float closestDistance = Mathf.Infinity;
         Transform closestEnemy = null;
 
@@ -70,7 +79,6 @@ public class DefenderController : MonoBehaviour
             if (enemyCollider.CompareTag("Enemy"))
             {
                 float distanceToEnemy = Vector3.Distance(transform.position, enemyCollider.transform.position);
-                Debug.Log("Enemy detected at distance: " + distanceToEnemy); // Add this for debugging
                 if (distanceToEnemy < closestDistance)
                 {
                     closestDistance = distanceToEnemy;
@@ -82,41 +90,21 @@ public class DefenderController : MonoBehaviour
         target = closestEnemy;
     }
 
-    // Method to shoot at an enemy
-    private void ShootAtEnemies()
+    // Method to shoot at the current target
+    private void ShootAtEnemy()
     {
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
-        bool shooting = false; // Flag to check if any enemies are hit
-
-        foreach (Collider enemyCollider in hitEnemies)
+        if (projectilePrefab != null && target != null)
         {
-            if (enemyCollider.CompareTag("Enemy")) // Ensure the collider is an enemy
-            {
-                shooting = true; // Set flag to true if an enemy is hit
+            GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
+            ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
 
-                // Launch projectile at the first enemy found
-                LaunchProjectile(enemyCollider.transform);
-                break; // Fire only one projectile per interval
+            if (projectileController != null)
+            {
+                projectile.transform.LookAt(target.position);
+                projectileController.SetTarget(target, damage);
             }
         }
-
-        if (shooting)
-        {
-            Debug.Log("Tower is shooting at enemies.");
-        }
     }
-    private void LaunchProjectile(Transform target)
-    {
-        GameObject projectile = Instantiate(projectilePrefab, shootProjectile.position, Quaternion.identity);
-        ProjectileController projectileController = projectile.GetComponent<ProjectileController>();
-
-        if (projectileController != null)
-        {
-            projectile.transform.LookAt(target.position);
-            projectileController.SetTarget(target, damage);
-        }
-    }
-
 
     // Method for the defender to take damage
     public virtual void TakeDamage(float amount)
@@ -136,6 +124,7 @@ public class DefenderController : MonoBehaviour
         Destroy(gameObject); // Destroy the defender when health reaches zero
     }
 
+    // Taunt behavior: make the defender target a specific enemy for a set duration
     public virtual void TargetEnemy(EnemyController enemy)
     {
         target = enemy.transform;
