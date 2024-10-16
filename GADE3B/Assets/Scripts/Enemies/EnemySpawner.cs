@@ -261,6 +261,7 @@ public class EnemySpawner : MonoBehaviour
 
 
 
+
     public GameObject[] enemyPrefabs;  // Array of different enemy prefabs
     public Terrain terrain;  // Reference to the Terrain
     public MainTowerController mainTowerController;  // Reference to the tower
@@ -282,7 +283,6 @@ public class EnemySpawner : MonoBehaviour
     private void Start()
     {
         StartCoroutine(WaitForMainTowerControllerAndNavMesh());
-        // Apply the difficulty settings after initialization
         ApplyDifficultySettings();
     }
 
@@ -364,6 +364,8 @@ public class EnemySpawner : MonoBehaviour
 
         currentWave++;  // Move to the next wave
         yield return new WaitForSeconds(timeBetweenWaves);  // Wait before the next wave
+
+        StartCoroutine(SpawnWave()); // Start the next wave
     }
 
     public void SpawnEnemy()
@@ -377,7 +379,12 @@ public class EnemySpawner : MonoBehaviour
         if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
             spawnPoint = hit.position;  // Adjust to valid NavMesh point
-            GameObject enemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];  // Random enemy type
+
+            // Determine which enemy types to spawn based on the current wave number
+            int maxEnemyIndex = currentWave <= 1 ? 1 : currentWave == 2 ? 2 : enemyPrefabs.Length;
+            int randomEnemyIndex = Random.Range(0, Mathf.Min(maxEnemyIndex, enemyPrefabs.Length));
+            GameObject enemyPrefab = enemyPrefabs[randomEnemyIndex];
+
             GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
 
             // Track active enemies in EnemyManager
@@ -441,8 +448,6 @@ public class EnemySpawner : MonoBehaviour
         // Spawn a new enemy to replace the one that was removed
         SpawnEnemy();
     }
-
-
 
     public bool isTestingMode = true; // Flag to toggle testing mode
 
