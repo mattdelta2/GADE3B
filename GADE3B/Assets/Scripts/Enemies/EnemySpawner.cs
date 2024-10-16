@@ -282,6 +282,8 @@ public class EnemySpawner : MonoBehaviour
     private void Start()
     {
         StartCoroutine(WaitForMainTowerControllerAndNavMesh());
+        // Apply the difficulty settings after initialization
+        ApplyDifficultySettings();
     }
 
     private IEnumerator WaitForMainTowerControllerAndNavMesh()
@@ -438,5 +440,39 @@ public class EnemySpawner : MonoBehaviour
 
         // Spawn a new enemy to replace the one that was removed
         SpawnEnemy();
+    }
+
+
+
+    public bool isTestingMode = true; // Flag to toggle testing mode
+
+    private void ApplyDifficultySettings()
+    {
+        string selectedDifficulty = PlayerPrefs.GetString("SelectedDifficulty", "Normal"); // Retrieve the selected difficulty
+
+        if (isTestingMode)
+        {
+            // Use the same settings for all difficulties during testing
+            spawnInterval = 2f;
+            enemiesPerWave = 5;
+            timeBetweenWaves = 5f;
+        }
+        else
+        {
+            // Use different settings based on the selected difficulty
+            if (selectedDifficulty == "Normal")
+            {
+                spawnInterval = 2f;
+                enemiesPerWave = 5;
+                timeBetweenWaves = 5f;
+            }
+            else if (selectedDifficulty == "Hard")
+            {
+                spawnInterval = 1f;
+                enemiesPerWave = 10;
+                timeBetweenWaves = 3f;
+            }
+        }
+        Debug.Log("Difficulty settings applied: " + (isTestingMode ? "Testing mode" : selectedDifficulty));
     }
 }
