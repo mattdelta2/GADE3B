@@ -440,6 +440,15 @@ public class EnemyController : MonoBehaviour
     // Method to find and prioritize defenders within range
     private void FindClosestDefender()
     {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+
+        // Check if the NavMeshAgent component exists and is on the NavMesh
+        if (agent == null || !agent.isOnNavMesh)
+        {
+            Debug.LogWarning("NavMeshAgent is not properly placed on the NavMesh. Cannot find destination.");
+            return; // Exit the method if the agent is not on the NavMesh
+        }
+
         Collider[] hitDefenders = Physics.OverlapSphere(transform.position, range);
         float closestDistance = Mathf.Infinity;
         Transform closestDefender = null;
@@ -462,12 +471,20 @@ public class EnemyController : MonoBehaviour
         if (closestDefender != null)
         {
             currentTarget = closestDefender;
-            SetDestination(currentTarget);
         }
         else
         {
             currentTarget = tower;
-            SetDestination(currentTarget);
+        }
+
+        // Set destination if the agent is on a valid NavMesh
+        if (agent.isOnNavMesh)
+        {
+            agent.SetDestination(currentTarget.position);
+        }
+        else
+        {
+            Debug.LogWarning("Failed to set destination. The NavMeshAgent is not properly on a NavMesh.");
         }
     }
 

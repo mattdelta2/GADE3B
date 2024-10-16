@@ -5,268 +5,13 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemySpawner : MonoBehaviour
-{/*
-    public GameObject enemyPrefab;  // The enemy prefab
-    public PathManager pathManager;  // Reference to PathManager
-    public Terrain terrain;  // Reference to Terrain
-    public float spawnInterval = 2f;  // Time between enemy spawns
-
-    private float timeSinceLastSpawn;
-    private Vector3[] spawnPoints;
-    private bool spawningEnabled = false;
-
-    void Start()
-    {
-        if (pathManager != null)
-        {
-            spawnPoints = pathManager.GenerateSpawnPoints();
-        }
-        else
-        {
-            Debug.LogError("PathManager is not assigned.");
-        }
-        timeSinceLastSpawn = 0f;
-    }
-
-    void Update()
-    {
-        if (spawningEnabled)
-        {
-            timeSinceLastSpawn += Time.deltaTime;
-            if (timeSinceLastSpawn >= spawnInterval)
-            {
-                SpawnEnemy();
-                timeSinceLastSpawn = 0f;
-            }
-        }
-    }
-
-    public void StartSpawning()
-    {
-        spawningEnabled = true;
-    }
-
-    public void SpawnEnemy()
-    {
-        if (spawnPoints.Length > 0)
-        {
-            Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            if (terrain == null)
-            {
-                Debug.LogError("Terrain reference is missing.");
-                return;
-            }
-
-            // Adjust spawn position to be on top of the terrain
-            float terrainHeight = terrain.SampleHeight(spawnPoint);
-            spawnPoint.y = terrainHeight;
-
-            GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
-            EnemyController enemyController = enemy.GetComponent<EnemyController>();
-            if (enemyController != null)
-            {
-                enemyController.terrain = terrain;  // Ensure terrain is assigned
-                List<Vector3> path = pathManager.GeneratePath(spawnPoint); // Capture the returned path
-                enemyController.SetPath(path); // Pass the path to the enemy controller
-            }
-            else
-            {
-                Debug.LogError("EnemyController component missing on enemy prefab.");
-            }
-        }
-        else
-        {
-            Debug.LogError("No spawn points available.");
-        }
-    }
-
-
-
-
-
-
-
-
-    
-   
-    public GameObject enemyPrefab;  // The enemy prefab
-    public PathManager pathManager;  // Reference to PathManager
-    public Terrain terrain;  // Reference to Terrain
-
-    public float spawnInterval = 2f;  // Time between enemy spawns
-
-    private float timeSinceLastSpawn;
-    private Vector3[] spawnPoints;
-    private bool spawningEnabled = false;
-
-    void Start()
-    {
-        if (pathManager != null)
-        {
-            spawnPoints = pathManager.GenerateSpawnPoints();
-        }
-        timeSinceLastSpawn = 0f;
-    }
-
-    void Update()
-    {
-        if (spawningEnabled)
-        {
-            timeSinceLastSpawn += Time.deltaTime;
-            if (timeSinceLastSpawn >= spawnInterval)
-            {
-                SpawnEnemy();
-                timeSinceLastSpawn = 0f;
-            }
-        }
-    }
-
-    public void StartSpawning()
-    {
-        spawningEnabled = true;
-    }
-
-    public void SpawnEnemy()
-    {
-        if (spawnPoints.Length > 0)
-        {
-            Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            // Adjust spawn position to be on top of the terrain
-            float terrainHeight = terrain.SampleHeight(spawnPoint);
-            spawnPoint.y = terrainHeight;
-            GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
-            
-            // Set enemy terrain reference and path
-            EnemyController enemyController = enemy.GetComponent<EnemyController>();
-            if (enemyController != null)
-            {
-                enemyController.SetTerrain(terrain); // Set terrain reference
-                enemyController.SetPath(pathManager.GeneratePath(spawnPoint));
-            }
-            else
-            {
-                Debug.LogError("EnemyController not found on the spawned enemy.");
-            }
-        }
-    }
-
-
-
-
-
-
-
-    public GameObject enemyPrefab;
-    public Terrain terrain;
-    public MainTowerController mainTowerController;
-    private Vector3[] spawnPoints;
-    private bool spawningEnabled = false;
-    private float spawnInterval = 5f; // Time in seconds between spawns
-    private float timer = 0f;
-
-    private void Start()
-    {
-        spawnPoints = GenerateSpawnPoints();
-        Debug.Log("Spawn points initialized.");
-        StartSpawning();
-    }
-
-    private void Update()
-    {
-        if (spawningEnabled)
-        {
-            timer += Time.deltaTime;
-            if (timer >= spawnInterval)
-            {
-                timer = 0f;
-                SpawnEnemy();
-            }
-        }
-    }
-
-    public void StartSpawning()
-    {
-        spawningEnabled = true;
-        Debug.Log("Spawning enabled.");
-    }
-
-    private void SpawnEnemy()
-    {
-        if (spawningEnabled)
-        {
-            if (spawnPoints.Length > 0)
-            {
-                // Choose a random spawn point
-                Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                float terrainHeight = terrain.SampleHeight(spawnPoint);
-                spawnPoint.y = terrainHeight;  // Ensure spawn point is on the terrain
-
-                GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
-                Debug.Log($"Enemy spawned at: {spawnPoint}");
-
-                // Set enemy terrain reference and path
-                EnemyController enemyController = enemy.GetComponent<EnemyController>();
-                if (enemyController != null)
-                {
-                    enemyController.SetTerrain(terrain);  // Set terrain reference
-
-                    // Create a path to the tower
-                    Vector3 towerPosition = mainTowerController.PlacedTower.transform.position;
-                    List<Vector3> path = new List<Vector3> { towerPosition };
-                    enemyController.SetPath(path);
-                    Debug.Log($"Path set for enemy: {path}");
-                }
-                else
-                {
-                    Debug.LogError("EnemyController not found on the spawned enemy.");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("No spawn points available.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Spawning is not enabled.");
-        }
-    }
-
-    private Vector3[] GenerateSpawnPoints()
-    {
-        // Example logic to generate 4 points around the edges
-        List<Vector3> points = new List<Vector3>();
-
-        Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
-        float terrainWidth = terrain.terrainData.size.x;
-        float terrainHeight = terrain.terrainData.size.z;
-
-        points.Add(new Vector3(0, 0, terrainCenter.z)); // Left edge
-        points.Add(new Vector3(terrainWidth, 0, terrainCenter.z)); // Right edge
-        points.Add(new Vector3(terrainCenter.x, 0, 0)); // Bottom edge
-        points.Add(new Vector3(terrainCenter.x, 0, terrainHeight)); // Top edge
-
-        Debug.Log("Spawn points generated:");
-        foreach (var point in points)
-        {
-            Debug.Log($"Spawn Point: {point}");
-        }
-
-        return points.ToArray();
-    }*/
-
-
-
-
-
-
-
+{
     public GameObject[] enemyPrefabs;  // Array of different enemy prefabs
     public Terrain terrain;  // Reference to the Terrain
     public MainTowerController mainTowerController;  // Reference to the tower
     public float spawnInterval = 2f;  // Time between enemy spawns within a wave
     public float timeBetweenWaves = 5f;  // Time between waves
-    public int enemiesPerWave = 5;  // Number of enemies per wave
+    public int baseEnemiesPerWave = 5;  // Base number of enemies per wave
     public PathManager pathManager;  // Reference to the PathManager for spawn points
     public TerrainGenerator terrainGenerator;  // For NavMesh readiness check
     public TextMeshProUGUI waveText;  // Reference to the UI Text for displaying the wave number
@@ -348,11 +93,13 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log($"Starting wave {currentWave}");
 
         enemiesSpawned = 0;  // Reset for the new wave
-        enemiesInCurrentWave = enemiesPerWave;  // Set the total number of enemies in this wave
+
+        // Calculate the number of enemies for the current wave
+        enemiesInCurrentWave = baseEnemiesPerWave + (currentWave - 1);  // Increase enemies as waves progress
 
         UpdateWaveText();  // Update the wave number in the UI
 
-        for (int i = 0; i < enemiesPerWave; i++)
+        for (int i = 0; i < enemiesInCurrentWave; i++)
         {
             SpawnEnemy();  // Spawn an enemy
             enemiesSpawned++;
@@ -375,7 +122,10 @@ public class EnemySpawner : MonoBehaviour
         if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
             spawnPoint = hit.position;  // Adjust to valid NavMesh point
-            GameObject enemyPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];  // Random enemy type
+
+            // Choose an enemy type based on the current wave
+            GameObject enemyPrefab = SelectEnemyTypeForWave();
+
             GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
 
             // Track active enemies in EnemyManager
@@ -398,6 +148,25 @@ public class EnemySpawner : MonoBehaviour
         else
         {
             Debug.LogError("Spawn point is not valid on the NavMesh.");
+        }
+    }
+
+    private GameObject SelectEnemyTypeForWave()
+    {
+        // Determine which enemy type(s) to spawn based on the current wave number
+        if (currentWave < 4)
+        {
+            return enemyPrefabs[0];  // Only spawn Enemy Type 1
+        }
+        else if (currentWave < 7)
+        {
+            // Spawn either Enemy Type 1 or Type 2
+            return enemyPrefabs[Random.Range(0, 2)];
+        }
+        else
+        {
+            // Spawn any of the three enemy types
+            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
         }
     }
 
