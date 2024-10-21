@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6961500529055613408}
   - component: {fileID: 8065955335646927227}
   - component: {fileID: 1047634101942876278}
-  - component: {fileID: 2461660714087950227}
   m_Layer: 0
   m_Name: Mortar Bullet
   m_TagString: Untagged
@@ -152,23 +151,7 @@ MonoBehaviour:
   target: {fileID: 0}
   explosionRadius: 5
   damage: 50
-  explosionAnimation: {fileID: 2461660714087950227}
---- !u!111 &2461660714087950227
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4878657982279946229}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 0}
-  m_Animations:
-  - {fileID: 7400000, guid: 48622102d0ea76d44ab4e778e1c43958, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  explosionAnimation: {fileID: 2557626315235805847}
 --- !u!1001 &4663958276807663739
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -231,7 +214,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4025470130324596155, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -48.772484
+      value: -46.886787
       objectReference: {fileID: 0}
     - target: {fileID: -4025470130324596155, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -239,11 +222,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4025470130324596155, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 123.75
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: -3983353918920824184, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -47.669243
+      value: -45.799496
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_Name
@@ -274,12 +257,12 @@ Animation:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5510396614122937642}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Animation: {fileID: 7400000, guid: 48622102d0ea76d44ab4e778e1c43958, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 48622102d0ea76d44ab4e778e1c43958, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
+  m_AnimatePhysics: 1
   m_CullingType: 0

@@ -7,9 +7,10 @@ public class BombProjectileController : MonoBehaviour
     public Transform target;              // Target to hit
     public float explosionRadius = 5f;    // Explosion radius
     public float damage = 50f;            // Damage dealt by the explosion
-    public Animation explosionAnimation;  // Legacy Animation component for explosion
+    public GameObject explosionEffect;    // Visual explosion effect, in this case we use animation
 
     private EnemyController targetEnemy;  // Cache for the target's EnemyController component
+    private Animation explosionAnimation; // Reference to the Animation component in the child
 
     public void SetTarget(Transform enemyTarget, float damageValue, float projectileSpeed)
     {
@@ -17,16 +18,13 @@ public class BombProjectileController : MonoBehaviour
         targetEnemy = target.GetComponent<EnemyController>();
         damage = damageValue;
         speed = projectileSpeed;
-    }
 
-    void Start()
-    {
-        // Get the Animation component for playing the explosion
-        explosionAnimation = GetComponent<Animation>();
+        // Find the animation component on the child object (assuming the child is where the animation is)
+        explosionAnimation = GetComponentInChildren<Animation>();
 
         if (explosionAnimation == null)
         {
-            Debug.LogError("Animation component not found on the projectile.");
+            Debug.LogError("Explosion animation not found on child object.");
         }
     }
 
@@ -58,13 +56,21 @@ public class BombProjectileController : MonoBehaviour
     private void Explode()
     {
         // Play the explosion animation if available
-        if (explosionAnimation != null && explosionAnimation.GetClip("Scene") != null)
+        if (explosionAnimation != null)
         {
-            explosionAnimation.Play("Scene");
+            if (explosionAnimation.GetClip("Scene") != null)
+            {
+                explosionAnimation.Play("Scene");
+                Debug.Log("Playing explosion animation 'Scene'.");
+            }
+            else
+            {
+                Debug.LogError("Explosion animation 'Scene' not found in the Animation component.");
+            }
         }
         else
         {
-            Debug.LogError("Explosion animation 'Scene' not found on the projectile.");
+            Debug.LogError("Explosion animation component is missing.");
         }
 
         // Damage all enemies within the explosion radius
