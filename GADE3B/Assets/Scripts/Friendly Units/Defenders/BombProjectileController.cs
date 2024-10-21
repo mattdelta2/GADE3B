@@ -7,7 +7,7 @@ public class BombProjectileController : MonoBehaviour
     public Transform target;              // Target to hit
     public float explosionRadius = 5f;    // Explosion radius
     public float damage = 50f;            // Damage dealt by the explosion
-    public GameObject explosionEffect;    // Visual explosion effect
+    public Animation explosionAnimation;  // Legacy Animation component for explosion
 
     private EnemyController targetEnemy;  // Cache for the target's EnemyController component
 
@@ -17,6 +17,17 @@ public class BombProjectileController : MonoBehaviour
         targetEnemy = target.GetComponent<EnemyController>();
         damage = damageValue;
         speed = projectileSpeed;
+    }
+
+    void Start()
+    {
+        // Get the Animation component for playing the explosion
+        explosionAnimation = GetComponent<Animation>();
+
+        if (explosionAnimation == null)
+        {
+            Debug.LogError("Animation component not found on the projectile.");
+        }
     }
 
     void Update()
@@ -46,10 +57,14 @@ public class BombProjectileController : MonoBehaviour
 
     private void Explode()
     {
-        // Instantiate explosion effect if available
-        if (explosionEffect != null)
+        // Play the explosion animation if available
+        if (explosionAnimation != null && explosionAnimation.GetClip("Scene") != null)
         {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+            explosionAnimation.Play("Scene");
+        }
+        else
+        {
+            Debug.LogError("Explosion animation 'Scene' not found on the projectile.");
         }
 
         // Damage all enemies within the explosion radius
@@ -66,8 +81,12 @@ public class BombProjectileController : MonoBehaviour
             }
         }
 
-        // Destroy the projectile after the explosion
-        Destroy(gameObject);
+        // Destroy the projectile after the explosion animation ends
+        float animationLength = explosionAnimation.GetClip("Scene") != null
+            ? explosionAnimation.GetClip("Scene").length
+            : 0f;
+
+        Destroy(gameObject, animationLength);
     }
 
     private void OnDrawGizmosSelected()
