@@ -151,7 +151,7 @@ MonoBehaviour:
   target: {fileID: 0}
   explosionRadius: 5
   damage: 50
-  explosionAnimation: {fileID: 2557626315235805847}
+  explosionEffect: {fileID: 5510396614122937642}
 --- !u!1001 &4663958276807663739
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -239,6 +239,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2557626315235805847}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3792920625250962766}
   m_SourcePrefab: {fileID: 100100000, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
 --- !u!4 &5130457779040962448 stripped
 Transform:
@@ -266,3 +269,24 @@ Animation:
   m_PlayAutomatically: 0
   m_AnimatePhysics: 1
   m_CullingType: 0
+--- !u!95 &3792920625250962766
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5510396614122937642}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ee33ce33eaf75f84984d4e70d6f19099, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

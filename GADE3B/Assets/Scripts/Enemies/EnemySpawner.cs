@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,7 +13,6 @@ public class EnemySpawner : MonoBehaviour
     public int baseEnemiesPerWave = 5;  // Base number of enemies per wave
     public PathManager pathManager;  // Reference to the PathManager for spawn points
     public TerrainGenerator terrainGenerator;  // For NavMesh readiness check
-    public TextMeshProUGUI waveText;  // Reference to the UI Text for displaying the wave number
 
     [Header("Spawn Settings")]
     public int numberOfSpawnPoints = 8;  // Number of spawn points around the tower
@@ -91,7 +89,6 @@ public class EnemySpawner : MonoBehaviour
     public void StartSpawning()
     {
         spawningEnabled = true;
-        UpdateWaveText();  // Update the wave text before starting the first wave
         StartCoroutine(SpawnWave());  // Start the first wave
     }
 
@@ -104,8 +101,6 @@ public class EnemySpawner : MonoBehaviour
 
         // Calculate the number of enemies for the current wave
         enemiesInCurrentWave = Mathf.RoundToInt(baseEnemiesPerWave * playerSkillLevel);
-
-        UpdateWaveText();  // Update the wave number in the UI
 
         for (int i = 0; i < enemiesInCurrentWave; i++)
         {
@@ -170,18 +165,6 @@ public class EnemySpawner : MonoBehaviour
         else
         {
             return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        }
-    }
-
-    private void UpdateWaveText()
-    {
-        if (waveText != null)
-        {
-            waveText.text = "Wave: " + currentWave;
-        }
-        else
-        {
-            Debug.LogError("WaveText UI reference is not assigned.");
         }
     }
 
