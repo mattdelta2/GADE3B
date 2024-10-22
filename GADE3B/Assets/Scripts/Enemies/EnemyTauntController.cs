@@ -64,4 +64,14 @@ public class EnemyTauntController : EnemyController
             }
         }
     }
+
+    // Override the ScaleAttributes method to adjust taunt-specific properties
+    public override void ScaleAttributes(float healthScale, float damageScale, float speedScale)
+    {
+        base.ScaleAttributes(healthScale, damageScale, speedScale);
+
+        // Adjust taunt-specific properties
+        tauntCooldown /= speedScale;  // Reduce cooldown for increased difficulty
+        tauntDuration *= speedScale;  // Increase taunt duration for higher difficulty
+    }
 }

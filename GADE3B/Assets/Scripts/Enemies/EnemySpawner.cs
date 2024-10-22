@@ -16,6 +16,10 @@ public class EnemySpawner : MonoBehaviour
     public TerrainGenerator terrainGenerator;  // For NavMesh readiness check
     public TextMeshProUGUI waveText;  // Reference to the UI Text for displaying the wave number
 
+    [Header("Spawn Settings")]
+    public int numberOfSpawnPoints = 8;  // Number of spawn points around the tower
+    public float minimumSpawnDistanceFromTower = 20f;  // Minimum distance from the tower to spawn enemies
+
     private List<Vector3> spawnPoints = new List<Vector3>();
     private bool spawningEnabled = false;
     private int currentWave = 1;
@@ -23,6 +27,10 @@ public class EnemySpawner : MonoBehaviour
     private int enemiesInCurrentWave = 0;  // Track the number of enemies in the current wave
 
     public EnemyManager enemyManager;  // Reference to EnemyManager
+
+    // Adaptive Spawning Metrics
+    private int enemiesDefeatedInWave = 0;
+    private float playerSkillLevel = 1f;  // Skill level indicator (1 means normal, >1 means good, <1 means struggling)
 
     private void Start()
     {
@@ -56,22 +64,21 @@ public class EnemySpawner : MonoBehaviour
         spawnPoints.Clear();
         Vector3 terrainSize = terrain.terrainData.size;
 
-        // Generate random points around the main tower
         Vector3 towerPosition = mainTowerController.transform.position;
-        int numberOfSpawnPoints = 8;  // Customize the number of spawn points
 
         for (int i = 0; i < numberOfSpawnPoints; i++)
         {
-            // Generate random direction and distance
             Vector3 randomDirection = Random.insideUnitSphere * terrainSize.x * 0.5f;
-            randomDirection.y = 0;  // Keep on the ground level
+            randomDirection.y = 0;
             Vector3 spawnPosition = towerPosition + randomDirection;
 
-            // Adjust spawn position to be on the terrain
             float terrainHeight = terrain.SampleHeight(spawnPosition);
             spawnPosition.y = terrainHeight;
 
-            // Ensure the spawn point is on the NavMesh
+            // Ensure enemies do not spawn too close to the main tower
+            if (Vector3.Distance(spawnPosition, towerPosition) < minimumSpawnDistanceFromTower)
+                continue;
+
             if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 10f, NavMesh.AllAreas))
             {
                 spawnPoints.Add(hit.position);
@@ -92,10 +99,11 @@ public class EnemySpawner : MonoBehaviour
     {
         Debug.Log($"Starting wave {currentWave}");
 
-        enemiesSpawned = 0;  // Reset for the new wave
+        enemiesSpawned = 0;
+        enemiesDefeatedInWave = 0;  // Reset defeated enemies count for new wave
 
         // Calculate the number of enemies for the current wave
-        enemiesInCurrentWave = baseEnemiesPerWave + (currentWave - 1);  // Increase enemies as waves progress
+        enemiesInCurrentWave = Mathf.RoundToInt(baseEnemiesPerWave * playerSkillLevel);
 
         UpdateWaveText();  // Update the wave number in the UI
 
@@ -104,38 +112,35 @@ public class EnemySpawner : MonoBehaviour
             SpawnEnemy();  // Spawn an enemy
             enemiesSpawned++;
 
-            yield return new WaitForSeconds(spawnInterval);  // Delay between enemies
+            float adjustedSpawnInterval = spawnInterval / playerSkillLevel;
+            yield return new WaitForSeconds(adjustedSpawnInterval);  // Adjust interval by skill level
         }
 
-        currentWave++;  // Move to the next wave
-        yield return new WaitForSeconds(timeBetweenWaves);  // Wait before the next wave
+        currentWave++;
+        yield return new WaitForSeconds(timeBetweenWaves);
 
-        SetEnemyDifficultyScale(currentWave * 0.1f);  // Increase difficulty for the next wave
+        AdaptDifficulty();  // Adjust difficulty based on performance
+        StartCoroutine(SpawnWave());  // Start the next wave
     }
 
     public void SpawnEnemy()
     {
         if (spawnPoints.Count == 0) return;
 
-        // Choose a spawn point
         Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
-        // Ensure spawn point is on NavMesh
         if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
-            spawnPoint = hit.position;  // Adjust to valid NavMesh point
+            spawnPoint = hit.position;
 
-            // Choose an enemy type based on the current wave
             GameObject enemyPrefab = SelectEnemyTypeForWave();
-
             GameObject enemy = Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
 
-            // Track active enemies in EnemyManager
             EnemyController enemyController = enemy.GetComponent<EnemyController>();
             if (enemyController != null)
             {
                 enemyController.tower = mainTowerController.transform;
-                enemyController.enemySpawner = this;  // Pass reference to spawner for respawning
+                enemyController.enemySpawner = this;
 
                 NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
                 if (agent != null)
@@ -143,7 +148,6 @@ public class EnemySpawner : MonoBehaviour
                     agent.SetDestination(mainTowerController.transform.position);
                 }
 
-                // Add enemy to EnemyManager
                 enemyManager.AddEnemy(enemyController);
             }
         }
@@ -155,19 +159,16 @@ public class EnemySpawner : MonoBehaviour
 
     private GameObject SelectEnemyTypeForWave()
     {
-        // Determine which enemy type(s) to spawn based on the current wave number
         if (currentWave < 4)
         {
-            return enemyPrefabs[0];  // Only spawn Enemy Type 1
+            return enemyPrefabs[0];
         }
         else if (currentWave < 7)
         {
-            // Spawn either Enemy Type 1 or Type 2
             return enemyPrefabs[Random.Range(0, 2)];
         }
         else
         {
-            // Spawn any of the three enemy types
             return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
         }
     }
@@ -187,33 +188,28 @@ public class EnemySpawner : MonoBehaviour
     public void OnEnemyDeath()
     {
         enemiesInCurrentWave--;
+        enemiesDefeatedInWave++;
 
-        // Check if all enemies in the current wave are dead
         if (enemiesInCurrentWave <= 0)
         {
-            StartCoroutine(SpawnWave());  // Start the next wave
+            Debug.Log($"Wave {currentWave - 1} complete. Enemies defeated: {enemiesDefeatedInWave}");
         }
     }
 
     public void RespawnEnemy(GameObject enemy)
     {
-        // Remove the enemy from the EnemyManager
         EnemyController enemyController = enemy.GetComponent<EnemyController>();
         if (enemyController != null)
         {
             enemyManager.RemoveEnemy(enemyController);
         }
 
-        // Destroy the old enemy
         Destroy(enemy);
-
-        // Spawn a new enemy to replace the one that was removed
         SpawnEnemy();
     }
 
     public void SetEnemyDifficultyScale(float difficultyScale)
     {
-        // Apply scaling to all enemy parameters
         foreach (GameObject enemyPrefab in enemyPrefabs)
         {
             EnemyController enemyController = enemyPrefab.GetComponent<EnemyController>();
@@ -228,4 +224,23 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    public void SetPlayerSkillLevel(float newSkillLevel)
+    {
+        playerSkillLevel = Mathf.Max(1f, newSkillLevel);
+        Debug.Log($"Player skill level set to: {playerSkillLevel}");
+    }
+
+    private void AdaptDifficulty()
+    {
+        if (enemiesDefeatedInWave > enemiesInCurrentWave * 0.8f)
+        {
+            playerSkillLevel += 0.1f;  // Increase skill level if player is doing well
+        }
+        else if (enemiesDefeatedInWave < enemiesInCurrentWave * 0.5f)
+        {
+            playerSkillLevel = Mathf.Max(1f, playerSkillLevel - 0.1f);  // Decrease skill level if struggling
+        }
+
+        Debug.Log($"Player skill level adjusted to: {playerSkillLevel}");
+    }
 }

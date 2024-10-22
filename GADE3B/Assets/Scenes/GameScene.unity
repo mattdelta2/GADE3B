@@ -298,6 +298,8 @@ MonoBehaviour:
   pathManager: {fileID: 1975598647}
   terrainGenerator: {fileID: 1544179510}
   waveText: {fileID: 1201105769}
+  numberOfSpawnPoints: 8
+  minimumSpawnDistanceFromTower: 50
   enemyManager: {fileID: 1450549545}
 --- !u!4 &174013545
 Transform:
@@ -1598,6 +1600,12 @@ MonoBehaviour:
   cameraController: {fileID: 963194229}
   terrainGenerator: {fileID: 1544179510}
   defenderPlacementManager: {fileID: 1987939575}
+  normalSpawnInterval: 2
+  hardSpawnInterval: 1.5
+  normalEnemiesPerWave: 5
+  hardEnemiesPerWave: 10
+  normalSkillLevel: 1
+  hardSkillLevel: 1.5
 --- !u!4 &1450549543
 Transform:
   m_ObjectHideFlags: 0

@@ -22,6 +22,10 @@ public class GameManager : MonoBehaviour
     public int normalEnemiesPerWave = 5;
     public int hardEnemiesPerWave = 10;
 
+    // Player skill scaling
+    public float normalSkillLevel = 1f;
+    public float hardSkillLevel = 1.5f;
+
     void Start()
     {
         navMeshSurface = FindObjectOfType<NavMeshSurface>();
@@ -108,6 +112,7 @@ public class GameManager : MonoBehaviour
         // Adjust parameters for normal difficulty
         enemySpawner.spawnInterval = normalSpawnInterval;
         enemySpawner.baseEnemiesPerWave = normalEnemiesPerWave;
+        enemySpawner.SetPlayerSkillLevel(normalSkillLevel);  // Set the initial skill level for normal difficulty
 
         // Additional adjustments for normal difficulty if needed
     }
@@ -119,6 +124,7 @@ public class GameManager : MonoBehaviour
         // Adjust parameters for hard difficulty
         enemySpawner.spawnInterval = hardSpawnInterval;
         enemySpawner.baseEnemiesPerWave = hardEnemiesPerWave;
+        enemySpawner.SetPlayerSkillLevel(hardSkillLevel);  // Set the initial skill level for hard difficulty
 
         // Hard difficulty modifications can include:
         // - Increased enemy health

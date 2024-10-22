@@ -103,7 +103,7 @@ public class EnemyController : MonoBehaviour
     }
 
     // New method for scaling enemy attributes
-    public void ScaleAttributes(float healthScale, float damageScale, float speedScale)
+    public virtual void  ScaleAttributes(float healthScale, float damageScale, float speedScale)
     {
         health *= healthScale;
         maxHealth *= healthScale;
