@@ -109,6 +109,8 @@ public class EnemySpawner : MonoBehaviour
 
         currentWave++;  // Move to the next wave
         yield return new WaitForSeconds(timeBetweenWaves);  // Wait before the next wave
+
+        SetEnemyDifficultyScale(currentWave * 0.1f);  // Increase difficulty for the next wave
     }
 
     public void SpawnEnemy()
@@ -208,4 +210,22 @@ public class EnemySpawner : MonoBehaviour
         // Spawn a new enemy to replace the one that was removed
         SpawnEnemy();
     }
+
+    public void SetEnemyDifficultyScale(float difficultyScale)
+    {
+        // Apply scaling to all enemy parameters
+        foreach (GameObject enemyPrefab in enemyPrefabs)
+        {
+            EnemyController enemyController = enemyPrefab.GetComponent<EnemyController>();
+            if (enemyController != null)
+            {
+                enemyController.ScaleAttributes(difficultyScale, difficultyScale, difficultyScale);
+            }
+            else
+            {
+                Debug.LogError("EnemyController not found on enemy prefab.");
+            }
+        }
+    }
+
 }
