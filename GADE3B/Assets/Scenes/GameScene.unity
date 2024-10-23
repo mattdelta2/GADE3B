@@ -297,9 +297,9 @@ MonoBehaviour:
   baseEnemiesPerWave: 5
   pathManager: {fileID: 1975598647}
   terrainGenerator: {fileID: 1544179510}
-  waveText: {fileID: 1201105769}
   numberOfSpawnPoints: 8
   minimumSpawnDistanceFromTower: 50
+  waveText: {fileID: 1201105769}
   enemyManager: {fileID: 1450549545}
 --- !u!4 &174013545
 Transform:
@@ -1215,7 +1215,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 'Wave:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

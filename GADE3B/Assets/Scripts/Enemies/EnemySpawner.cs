@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,6 +24,7 @@ public class EnemySpawner : MonoBehaviour
     private int currentWave = 1;
     private int enemiesSpawned = 0;
     private int enemiesInCurrentWave = 0;  // Track the number of enemies in the current wave
+    public TextMeshProUGUI waveText;
 
     public EnemyManager enemyManager;  // Reference to EnemyManager
 
@@ -98,6 +100,7 @@ public class EnemySpawner : MonoBehaviour
 
         enemiesSpawned = 0;
         enemiesDefeatedInWave = 0;  // Reset defeated enemies count for new wave
+        waveText.text = "Wave: " + currentWave.ToString();
 
         // Calculate the number of enemies for the current wave
         enemiesInCurrentWave = Mathf.RoundToInt(baseEnemiesPerWave * playerSkillLevel);
