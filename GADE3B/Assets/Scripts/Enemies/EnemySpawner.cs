@@ -18,6 +18,12 @@ public class EnemySpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public int numberOfSpawnPoints = 8;  // Number of spawn points around the tower
     public float minimumSpawnDistanceFromTower = 20f;  // Minimum distance from the tower to spawn enemies
+    public float defenderCheckRadius = 10f;  // Distance to check for nearby defenders to avoid spawning near them
+    public DefenderManager defenderManager;  // Reference to manage defenders
+
+    [Header("Difficulty Settings")]
+    public bool isHardMode = false;  // Toggle for Hard mode (e.g., selected by player)
+    public float hardModeMultiplier = 1.5f;  // Multiplier for health, speed, etc., in Hard mode
 
     private List<Vector3> spawnPoints = new List<Vector3>();
     private bool spawningEnabled = false;
@@ -31,7 +37,8 @@ public class EnemySpawner : MonoBehaviour
     // Adaptive Spawning Metrics
     private int enemiesDefeatedInWave = 0;
     private float playerSkillLevel = 1f;  // Skill level indicator (1 means normal, >1 means good, <1 means struggling)
-
+    public float playerHealth;  // Simulated player health (to be tracked)
+    
     private void Start()
     {
         StartCoroutine(WaitForMainTowerControllerAndNavMesh());
@@ -79,6 +86,10 @@ public class EnemySpawner : MonoBehaviour
             if (Vector3.Distance(spawnPosition, towerPosition) < minimumSpawnDistanceFromTower)
                 continue;
 
+            // Check for nearby defenders to avoid spawning in heavily fortified areas
+            if (IsNearDefender(spawnPosition))
+                continue;
+
             if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 10f, NavMesh.AllAreas))
             {
                 spawnPoints.Add(hit.position);
@@ -86,6 +97,19 @@ public class EnemySpawner : MonoBehaviour
         }
 
         Debug.Log("Spawn points generated: " + spawnPoints.Count);
+    }
+
+    private bool IsNearDefender(Vector3 spawnPosition)
+    {
+        Collider[] defendersNearby = Physics.OverlapSphere(spawnPosition, defenderCheckRadius);
+        foreach (Collider col in defendersNearby)
+        {
+            if (col.CompareTag("Defender"))
+            {
+                return true;  // Spawn point is too close to a defender
+            }
+        }
+        return false;
     }
 
     public void StartSpawning()
@@ -127,6 +151,9 @@ public class EnemySpawner : MonoBehaviour
 
         Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
+        // Adjust the y position based on the terrain height at the x and z position
+        spawnPoint.y = terrain.SampleHeight(spawnPoint);
+
         if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
         {
             spawnPoint = hit.position;
@@ -143,7 +170,12 @@ public class EnemySpawner : MonoBehaviour
                 NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
                 if (agent != null)
                 {
+                    // Warp the agent to ensure it's placed correctly on the terrain
+                    agent.Warp(spawnPoint);
                     agent.SetDestination(mainTowerController.transform.position);
+
+                    // Stuck detection and fallback
+                    StartCoroutine(CheckIfStuck(agent, enemyController));
                 }
 
                 enemyManager.AddEnemy(enemyController);
@@ -157,7 +189,12 @@ public class EnemySpawner : MonoBehaviour
 
     private GameObject SelectEnemyTypeForWave()
     {
-        if (currentWave < 4)
+        if (isHardMode)
+        {
+            // Spawn tougher enemies on Hard mode
+            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        }
+        else if (currentWave < 4)
         {
             return enemyPrefabs[0];
         }
@@ -218,6 +255,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void AdaptDifficulty()
     {
+        // Adjust player skill level based on performance
         if (enemiesDefeatedInWave > enemiesInCurrentWave * 0.8f)
         {
             playerSkillLevel += 0.1f;  // Increase skill level if player is doing well
@@ -228,5 +266,34 @@ public class EnemySpawner : MonoBehaviour
         }
 
         Debug.Log($"Player skill level adjusted to: {playerSkillLevel}");
+    }
+
+    private IEnumerator CheckIfStuck(NavMeshAgent agent, EnemyController enemyController)
+    {
+        Vector3 lastPosition = agent.transform.position;
+        float stuckTimer = 0f;
+        float stuckThreshold = 2f;  // Time in seconds to consider an enemy stuck
+
+        while (agent != null && !agent.isStopped)
+        {
+            yield return new WaitForSeconds(0.5f);  // Check every half second
+
+            if (Vector3.Distance(lastPosition, agent.transform.position) < 0.1f)
+            {
+                stuckTimer += 0.5f;  // Add half a second to the stuck timer
+                if (stuckTimer >= stuckThreshold)
+                {
+                    Debug.LogWarning($"Enemy {enemyController.gameObject.name} is stuck, respawning...");
+                    RespawnEnemy(enemyController.gameObject);
+                    yield break;  // Exit the coroutine if the enemy is stuck
+                }
+            }
+            else
+            {
+                stuckTimer = 0f;  // Reset the timer if the enemy is moving
+            }
+
+            lastPosition = agent.transform.position;
+        }
     }
 }

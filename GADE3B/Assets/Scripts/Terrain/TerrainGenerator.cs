@@ -164,7 +164,7 @@ public class TerrainGenerator : MonoBehaviour
         // Generate and apply the terrain data
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
 
-        // Find or create the NavMeshSurface component in the scene during runtime
+        // Create a NavMeshSurface component during runtime
         AssignOrCreateNavMeshSurface();
 
         // Check if NavMeshSurface is found and bake the NavMesh
@@ -181,12 +181,9 @@ public class TerrainGenerator : MonoBehaviour
 
     private void AssignOrCreateNavMeshSurface()
     {
-        navMeshSurface = FindObjectOfType<NavMeshSurface>();
-        if (navMeshSurface == null)
-        {
-            Debug.LogWarning("NavMeshSurface not found. Creating a new one.");
-            navMeshSurface = terrain.gameObject.AddComponent<NavMeshSurface>();
-        }
+        // Always create a new NavMeshSurface component on the terrain
+        navMeshSurface = terrain.gameObject.AddComponent<NavMeshSurface>();
+        Debug.Log("Created a new NavMeshSurface.");
     }
 
     // Generate terrain data based on the heightmap
@@ -278,7 +275,6 @@ public class TerrainGenerator : MonoBehaviour
         navMeshSurface.BuildNavMesh();
         Debug.Log("NavMesh re-baked.");
     }
-
 
     // Public method to check if the NavMesh is ready
     public bool IsNavMeshReady()

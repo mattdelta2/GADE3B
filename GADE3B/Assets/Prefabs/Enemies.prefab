@@ -61,7 +61,8 @@ MonoBehaviour:
   healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
   stuckThreshold: 3
   enemySpawner: {fileID: 0}
-  shootingInterval: 1
+  shootingInterval: 2
+  moveSpeed: 5
 --- !u!135 &-4735756282337569122
 SphereCollider:
   m_ObjectHideFlags: 0

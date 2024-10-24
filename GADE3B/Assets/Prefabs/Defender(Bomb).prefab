@@ -234,9 +234,9 @@ MonoBehaviour:
   shootProjectile: {fileID: 6784693881148765987}
   bombProjectilePrefab: {fileID: 4878657982279946229, guid: b3a475ed21375c14cb15fcd6363da345, type: 3}
   shootPoint: {fileID: 6784693881148765987}
-  bombExplosionRadius: 5
+  bombExplosionRadius: 30
   bombDamage: 50
-  speed: 30
+  speed: 15
 --- !u!1001 &3891077423806913450
 PrefabInstance:
   m_ObjectHideFlags: 0

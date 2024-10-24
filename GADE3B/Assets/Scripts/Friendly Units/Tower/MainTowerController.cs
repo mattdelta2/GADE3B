@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,172 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainTowerController : MonoBehaviour
-{/*
-    public GameObject mainTowerPrefab;
-    public PathManager pathManager;  // Reference to PathManager
-    public EnemySpawner enemySpawner; // Reference to EnemySpawner
-    public Terrain terrain; // Reference to the terrain
-    public TowerPlacement towerPlacement;
-
-
-
-    private bool canPlaceMainTower = true;
-    private GameObject placedTower;  // Reference to the placed tower
-
-    void Update()
-    {
-        if (canPlaceMainTower && Input.GetMouseButtonDown(0))  // Left click
-        {
-            Vector3 worldPosition = GetWorldPositionFromMouse();
-            if (towerPlacement.CanPlaceTower(worldPosition))
-            {
-                // Place the main tower
-                placedTower = Instantiate(mainTowerPrefab, worldPosition, Quaternion.identity);
-                canPlaceMainTower = false;  // Prevent further placement
-
-                // Notify PathManager to generate paths
-                if (pathManager != null && placedTower != null)
-                {
-                    pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
-                }
-                else
-                {
-                    Debug.LogError("PathManager or placedTower is null.");
-                }
-
-                // Notify EnemySpawner to start spawning enemies
-                if (enemySpawner != null)
-                {
-                    enemySpawner.StartSpawning(); // Start enemy spawning
-                }
-            }
-            else
-            {
-                Debug.Log("Cannot place main tower here!");
-            }
-        }
-    }
-
-    Vector3 GetWorldPositionFromMouse()
-    {
-        // Convert mouse position to world position
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            return hit.point;
-        }
-        return Vector3.zero;
-    }
-
-
-
-   
-    public GameObject mainTowerPrefab;
-    public TowerPlacement towerPlacement;
-    public PathManager pathManager;  // Reference to PathManager
-    public EnemySpawner enemySpawner; // Reference to EnemySpawner
-    public Terrain terrain; // Reference to the terrain
-
-    private bool canPlaceMainTower = true;
-    private GameObject placedTower;  // Reference to the placed tower
-
-    void Update()
-    {
-        if (canPlaceMainTower && Input.GetMouseButtonDown(0))  // Left click
-        {
-            Vector3 worldPosition = GetWorldPositionFromMouse();
-            if (towerPlacement.CanPlaceTower(worldPosition))
-            {
-                // Place the main tower
-                Vector3 terrainPosition = new Vector3(worldPosition.x, terrain.SampleHeight(worldPosition), worldPosition.z);
-                placedTower = Instantiate(mainTowerPrefab, terrainPosition, Quaternion.identity);
-                canPlaceMainTower = false;  // Prevent further placement
-
-                // Notify PathManager to generate paths
-                if (pathManager != null && placedTower != null)
-                {
-                    pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
-                }
-                else
-                {
-                    Debug.LogError("PathManager or placedTower is null.");
-                }
-
-                // Notify EnemySpawner to start spawning enemies
-                if (enemySpawner != null)
-                {
-                    enemySpawner.StartSpawning(); // Start enemy spawning
-                }
-            }
-            else
-            {
-                Debug.Log("Cannot place main tower here!");
-            }
-        }
-    }
-
-    Vector3 GetWorldPositionFromMouse()
-    {
-        // Convert mouse position to world position
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            return hit.point;
-        }
-        return Vector3.zero;
-    }
-
-
-
-
-
-        //spawn tower by clicking the terrain
-    
-    public GameObject mainTowerPrefab;
-    public TowerPlacement towerPlacement;
-    public PathManager pathManager; // Reference to PathManager
-    public EnemySpawner enemySpawner; // Reference to EnemySpawner
-    public Terrain terrain; // Reference to the terrain
-
-    private bool canPlaceMainTower = true;
-    private GameObject placedTower; // Reference to the placed tower
-
-    void Update()
-    {
-        if (canPlaceMainTower && Input.GetMouseButtonDown(0)) // Left click
-        {
-            // Get the center position of the terrain
-            Vector3 terrainCenter = new Vector3(terrain.terrainData.size.x / 2, 0, terrain.terrainData.size.z / 2);
-            float terrainHeight = terrain.SampleHeight(terrainCenter);
-            Vector3 centerPosition = new Vector3(terrainCenter.x, terrainHeight, terrainCenter.z);
-
-            // Place the main tower
-            placedTower = Instantiate(mainTowerPrefab, centerPosition, Quaternion.identity);
-            canPlaceMainTower = false; // Prevent further placement
-
-            // Notify PathManager to generate paths
-            if (pathManager != null && placedTower != null)
-            {
-                pathManager.SetTower(placedTower.transform); // Pass the actual tower's transform
-            }
-            else
-            {
-                Debug.LogError("PathManager or placedTower is null.");
-            }
-
-            // Notify EnemySpawner to start spawning enemies
-            if (enemySpawner != null)
-            {
-                enemySpawner.StartSpawning(); // Start enemy spawning
-            }
-        }
-    }*/
-
-    //spawn tower when the game starts
-
-
+{
     public PathManager pathManager; // Reference to the PathManager
     public EnemySpawner enemySpawner; // Reference to the EnemySpawner
     public Terrain terrain; // Reference to the Terrain
@@ -191,7 +25,9 @@ public class MainTowerController : MonoBehaviour
 
     private void Start()
     {
-        projectileSpawnPoint = transform.Find("ProjectileSpawnPoint");
+        // Ensure the tower is placed on top of the terrain
+        PositionTowerOnTerrain();
+
         currentHealth = maxHealth; // Initialize current health
 
         Debug.Log($"Tower starting position: {transform.position}");
@@ -218,6 +54,16 @@ public class MainTowerController : MonoBehaviour
                 shootingTimer = 0f; // Reset the timer after shooting
             }
         }
+    }
+
+    // Ensure that the tower is positioned correctly on top of the terrain
+    private void PositionTowerOnTerrain()
+    {
+        // Sample the height of the terrain at the tower's current x and z positions
+        float terrainHeight = terrain.SampleHeight(transform.position);
+
+        // Adjust the tower's y position to match the terrain height
+        transform.position = new Vector3(transform.position.x, terrainHeight, transform.position.z);
     }
 
     private void ShootAtEnemies()
@@ -267,9 +113,6 @@ public class MainTowerController : MonoBehaviour
             Debug.LogError("ProjectileController component missing on projectile prefab.");
         }
     }
-
-
-
 
     public void TakeDamage(float damageAmount)
     {
@@ -332,7 +175,6 @@ public class MainTowerController : MonoBehaviour
         SceneManager.LoadScene("EndScene");
         Debug.Log("MainTower down");
         Destroy(gameObject);
-
     }
 
     public bool IsDead()
@@ -340,8 +182,3 @@ public class MainTowerController : MonoBehaviour
         return currentHealth <= 0;
     }
 }
-
-
-
-
-
