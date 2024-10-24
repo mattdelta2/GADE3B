@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -242395953991005787}
   - component: {fileID: -7561568215060766294}
   m_Layer: 0
-  m_Name: Defender(DMG)
+  m_Name: Defender DMG
   m_TagString: Defender
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88aecf0013639e444869062ff61c9df7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defenderType: DMG
   range: 60
   damage: 20
   shootingInterval: 1.5

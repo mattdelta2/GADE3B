@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class DefenderController : MonoBehaviour
 {
+    [Header("Defender Type")]
+    public string defenderType = "Normal"; // Type of the defender (Normal, AOE, DMG)
+
     [Header("Combat Settings")]
     public float range; // Range at which the defender can shoot, set in the Inspector
     public float damage; // Damage dealt by the defender's projectiles, set in the Inspector

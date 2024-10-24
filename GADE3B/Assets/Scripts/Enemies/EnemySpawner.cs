@@ -14,16 +14,12 @@ public class EnemySpawner : MonoBehaviour
     public int baseEnemiesPerWave = 5;  // Base number of enemies per wave
     public PathManager pathManager;  // Reference to the PathManager for spawn points
     public TerrainGenerator terrainGenerator;  // For NavMesh readiness check
+    public DefenderManager defenderManager;  // Reference to manage defenders
 
     [Header("Spawn Settings")]
     public int numberOfSpawnPoints = 8;  // Number of spawn points around the tower
     public float minimumSpawnDistanceFromTower = 20f;  // Minimum distance from the tower to spawn enemies
     public float defenderCheckRadius = 10f;  // Distance to check for nearby defenders to avoid spawning near them
-    public DefenderManager defenderManager;  // Reference to manage defenders
-
-    [Header("Difficulty Settings")]
-    public bool isHardMode = false;  // Toggle for Hard mode (e.g., selected by player)
-    public float hardModeMultiplier = 1.5f;  // Multiplier for health, speed, etc., in Hard mode
 
     private List<Vector3> spawnPoints = new List<Vector3>();
     private bool spawningEnabled = false;
@@ -38,10 +34,19 @@ public class EnemySpawner : MonoBehaviour
     private int enemiesDefeatedInWave = 0;
     private float playerSkillLevel = 1f;  // Skill level indicator (1 means normal, >1 means good, <1 means struggling)
     public float playerHealth;  // Simulated player health (to be tracked)
-    
+
+    // Defender-related spawn chances
+    private Dictionary<string, float[]> defenderTypeSpawnChances = new Dictionary<string, float[]>();
+
+    // Track the types of defenders placed
+    private Dictionary<string, int> defenderTypesCount = new Dictionary<string, int>();
+
     private void Start()
     {
         StartCoroutine(WaitForMainTowerControllerAndNavMesh());
+
+        // Initialize the spawn chances based on defender types
+        InitializeDefenderTypeSpawnChances();
     }
 
     private IEnumerator WaitForMainTowerControllerAndNavMesh()
@@ -187,26 +192,47 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    
+
     private GameObject SelectEnemyTypeForWave()
     {
-        if (isHardMode)
+        string mostCommonDefenderType = defenderManager.GetMostCommonDefenderType();
+        Debug.Log("Most common defender type: " + mostCommonDefenderType);
+
+        if (!defenderTypeSpawnChances.ContainsKey(mostCommonDefenderType))
         {
-            // Spawn tougher enemies on Hard mode
-            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            Debug.LogError("No spawn chances found for defender type: " + mostCommonDefenderType);
+            return null; // Safely return to avoid further null reference errors
         }
-        else if (currentWave < 4)
+
+        float[] spawnChances = defenderTypeSpawnChances[mostCommonDefenderType];
+        float randomValue = Random.Range(0f, 1f);
+
+        if (randomValue <= spawnChances[0]) // Tank enemy spawn chance
         {
-            return enemyPrefabs[0];
+            return enemyPrefabs[0]; // Assume the first prefab is Tank
         }
-        else if (currentWave < 7)
+        else if (randomValue <= spawnChances[0] + spawnChances[1]) // Speed enemy spawn chance
         {
-            return enemyPrefabs[Random.Range(0, 2)];
+            return enemyPrefabs[1]; // Assume the second prefab is Speed
         }
-        else
+        else // Normal enemy spawn chance
         {
-            return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            return enemyPrefabs[2]; // Assume the third prefab is Normal
         }
     }
+
+
+    // Initialize spawn chances for different defender types
+    private void InitializeDefenderTypeSpawnChances()
+    {
+        defenderTypeSpawnChances.Add("Normal", new float[] { 0.15f, 0.1f, 0.75f });
+        defenderTypeSpawnChances.Add("AOE", new float[] { 0.10f, 0.65f, 0.25f });
+        defenderTypeSpawnChances.Add("DMG", new float[] { 0.65f, 0.3f, 0.05f });
+
+        Debug.Log("Initialized defender spawn chances. Count: " + defenderTypeSpawnChances.Count);
+    }
+
 
     public void OnEnemyDeath()
     {
@@ -229,28 +255,6 @@ public class EnemySpawner : MonoBehaviour
 
         Destroy(enemy);
         SpawnEnemy();
-    }
-
-    public void SetEnemyDifficultyScale(float difficultyScale)
-    {
-        foreach (GameObject enemyPrefab in enemyPrefabs)
-        {
-            EnemyController enemyController = enemyPrefab.GetComponent<EnemyController>();
-            if (enemyController != null)
-            {
-                enemyController.ScaleAttributes(difficultyScale, difficultyScale, difficultyScale);
-            }
-            else
-            {
-                Debug.LogError("EnemyController not found on enemy prefab.");
-            }
-        }
-    }
-
-    public void SetPlayerSkillLevel(float newSkillLevel)
-    {
-        playerSkillLevel = Mathf.Max(1f, newSkillLevel);
-        Debug.Log($"Player skill level set to: {playerSkillLevel}");
     }
 
     private void AdaptDifficulty()
@@ -294,6 +298,52 @@ public class EnemySpawner : MonoBehaviour
             }
 
             lastPosition = agent.transform.position;
+        }
+    }
+
+    // Method to add a defender type when it's placed
+    public void AddDefenderType(string defenderType)
+    {
+        if (defenderTypesCount.ContainsKey(defenderType))
+        {
+            defenderTypesCount[defenderType]++;
+        }
+        else
+        {
+            defenderTypesCount[defenderType] = 1;
+        }
+
+        Debug.Log($"Defender of type {defenderType} added. Current count: {defenderTypesCount[defenderType]}");
+    }
+
+    // Method to log defender type counts (optional, for debugging)
+    public void LogDefenderTypeCounts()
+    {
+        foreach (var defenderType in defenderTypesCount)
+        {
+            Debug.Log($"{defenderType.Key}: {defenderType.Value} placed.");
+        }
+    }
+
+    public void SetPlayerSkillLevel(float newSkillLevel)
+    {
+        playerSkillLevel = Mathf.Max(1f, newSkillLevel);
+        Debug.Log($"Player skill level set to: {playerSkillLevel}");
+    }
+
+    public void SetEnemyDifficultyScale(float difficultyScale)
+    {
+        foreach (GameObject enemyPrefab in enemyPrefabs)
+        {
+            EnemyController enemyController = enemyPrefab.GetComponent<EnemyController>();
+            if (enemyController != null)
+            {
+                enemyController.ScaleAttributes(difficultyScale, difficultyScale, difficultyScale);
+            }
+            else
+            {
+                Debug.LogError("EnemyController not found on enemy prefab.");
+            }
         }
     }
 }

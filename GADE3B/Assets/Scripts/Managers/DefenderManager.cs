@@ -7,6 +7,9 @@ public class DefenderManager : MonoBehaviour
     public List<GameObject> defenders = new List<GameObject>(); // List to store all active defenders
     public float defenderCheckRadius = 5f; // Radius around defenders to avoid enemy spawning
 
+    // Dictionary to track the number of defenders by type
+    private Dictionary<string, int> defenderCounts = new Dictionary<string, int>();
+
     private void Start()
     {
         // Optionally, if there are pre-placed defenders, find and add them to the list
@@ -23,7 +26,28 @@ public class DefenderManager : MonoBehaviour
         if (!defenders.Contains(defender))
         {
             defenders.Add(defender);
-            Debug.Log($"Defender added: {defender.name} at position {defender.transform.position}");
+
+            // Add defender to defenderCounts based on its type
+            DefenderController defenderController = defender.GetComponent<DefenderController>();
+            if (defenderController != null)
+            {
+                string defenderType = defenderController.defenderType;
+
+                if (defenderCounts.ContainsKey(defenderType))
+                {
+                    defenderCounts[defenderType]++;
+                }
+                else
+                {
+                    defenderCounts[defenderType] = 1;
+                }
+
+                Debug.Log($"Defender of type {defenderType} added. Total of this type: {defenderCounts[defenderType]}");
+            }
+            else
+            {
+                Debug.LogError("The defender does not have a DefenderController script.");
+            }
         }
     }
 
@@ -33,7 +57,24 @@ public class DefenderManager : MonoBehaviour
         if (defenders.Contains(defender))
         {
             defenders.Remove(defender);
-            Debug.Log($"Defender removed: {defender.name}");
+
+            // Remove defender from defenderCounts based on its type
+            DefenderController defenderController = defender.GetComponent<DefenderController>();
+            if (defenderController != null)
+            {
+                string defenderType = defenderController.defenderType;
+
+                if (defenderCounts.ContainsKey(defenderType))
+                {
+                    defenderCounts[defenderType]--;
+                    if (defenderCounts[defenderType] <= 0)
+                    {
+                        defenderCounts.Remove(defenderType); // Remove the type if no defenders of this type are left
+                    }
+
+                    Debug.Log($"Defender of type {defenderType} removed. Remaining of this type: {defenderCounts[defenderType]}");
+                }
+            }
         }
     }
 
@@ -50,6 +91,24 @@ public class DefenderManager : MonoBehaviour
         return false; // No defenders nearby
     }
 
+    // Method to get the most common defender type
+    public string GetMostCommonDefenderType()
+    {
+        string mostCommonType = "Normal"; // Default to "Normal" if no defenders are placed
+        int maxCount = 0;
+
+        foreach (var defenderType in defenderCounts)
+        {
+            if (defenderType.Value > maxCount)
+            {
+                mostCommonType = defenderType.Key;
+                maxCount = defenderType.Value;
+            }
+        }
+
+        return mostCommonType;
+    }
+
     // Optional: Method to visualize defender areas in the editor
     private void OnDrawGizmos()
     {
@@ -59,4 +118,7 @@ public class DefenderManager : MonoBehaviour
             Gizmos.DrawWireSphere(defender.transform.position, defenderCheckRadius);
         }
     }
+
+
+
 }

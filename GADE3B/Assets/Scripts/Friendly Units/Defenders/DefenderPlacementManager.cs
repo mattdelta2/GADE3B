@@ -4,94 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class DefenderPlacementManager : MonoBehaviour
-{/*
-    public GameObject defenderPrefab; // Set this in the inspector
-    public LayerMask terrainLayer; // Set the terrain layer in the inspector
-    public Camera mainCamera; // Reference to the main camera
-    public GoldManager goldManager; // Reference to the GoldManager
-    public int defenderCost = 5; // Cost to place a defender
-
-    public bool isPlacing = false; // Track whether we're in placement mode
-    private GameObject currentDefender;
-
-    void Update()
-    {
-        if (isPlacing && goldManager.currentGold >= defenderCost)
-        {
-            if (Input.GetMouseButtonDown(0)) // Left mouse button
-            {
-                if (currentDefender == null)
-                {
-                    PlaceDefenderAtCursor();
-                }
-                else
-                {
-                    ConfirmPlacement();
-                }
-            }
-
-            if (currentDefender != null)
-            {
-                MoveDefenderToCursor();
-            }
-        }
-    }
-
-    private void PlaceDefenderAtCursor()
-    {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, terrainLayer))
-        {
-            if (currentDefender == null)
-            {
-                Vector3 spawnPosition = hit.point;
-                spawnPosition.y += 0.5f; // Adjust height slightly above the terrain
-                currentDefender = Instantiate(defenderPrefab, spawnPosition, Quaternion.identity);
-            }
-        }
-        else
-        {
-            Debug.Log("Raycast did not hit the terrain layer.");
-        }
-    }
-
-    private void MoveDefenderToCursor()
-    {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        // Ensure we use the correct layer mask in the raycast
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, terrainLayer))
-        {
-            Vector3 newPosition = hit.point;
-            newPosition.y += 0.5f; // Adjust height if necessary
-            currentDefender.transform.position = newPosition;
-        }
-        else
-        {
-            Debug.LogError("Raycast did not hit the terrain layer. Check layer settings.");
-        }
-    }
-
-    public void TogglePlacementMode()
-    {
-        isPlacing = !isPlacing; // Toggle the placement mode
-        if (!isPlacing && currentDefender != null)
-        {
-            Destroy(currentDefender); // Clean up if exiting placement mode without placing
-        }
-    }
-
-    private void ConfirmPlacement()
-    {
-        // Finalize placement here, perhaps deduct gold etc.
-        goldManager.SpendGold(defenderCost);
-        currentDefender = null; // Ready for the next placement
-    }
-    */
-
+{
     public GameObject[] defenderPrefabs;    // Array of all defender prefabs
     public LayerMask terrainLayer;          // Set the terrain layer in the inspector
     public Camera mainCamera;               // Reference to the main camera
@@ -99,10 +12,10 @@ public class DefenderPlacementManager : MonoBehaviour
     public NavMeshSurface navMeshSurface;   // Reference to the NavMeshSurface used for full rebaking
     public PathManager pathManager;         // Reference to the PathManager for predetermined positions
     public float placementThreshold = 2.0f; // Max distance from a valid position to allow placement
+    public EnemySpawner enemySpawner;       // Reference to EnemySpawner to notify about placed defenders
 
     private GameObject selectedDefenderPrefab; // The currently selected defender prefab
     public bool isPlacing = false;          // Track whether we're in placement mode
-
     public GameObject defenderSelectionUI;  // Reference to the UI containing the defender selection buttons
 
     private void Update()
@@ -139,8 +52,6 @@ public class DefenderPlacementManager : MonoBehaviour
     // Method to select the defender (called by the UI buttons)
     public void SelectDefender(int defenderIndex)
     {
-        Debug.Log("SelectDefender called with index: " + defenderIndex);
-
         if (defenderPrefabs == null || defenderPrefabs.Length == 0)
         {
             Debug.LogError("Defender prefabs array is not assigned or empty.");
@@ -229,6 +140,9 @@ public class DefenderPlacementManager : MonoBehaviour
             // Notify the PathManager of the new defender position
             pathManager.AddDefenderPosition(defender.transform.position);
 
+            // Notify the EnemySpawner to update the defender types based on the placed defender
+            NotifyEnemySpawner(defender);
+
             // Rebuild the NavMesh
             StartCoroutine(RebakeNavMeshAndRecalculatePaths());
 
@@ -238,6 +152,17 @@ public class DefenderPlacementManager : MonoBehaviour
         else
         {
             Debug.LogError("Not enough gold to place the defender.");
+        }
+    }
+
+    private void NotifyEnemySpawner(GameObject defender)
+    {
+        // Check defender type and notify the EnemySpawner about the placed defender type
+        DefenderController defenderController = defender.GetComponent<DefenderController>();
+        if (defenderController != null)
+        {
+            string defenderType = defenderController.defenderType; // Assuming defenders have a defenderType field
+            enemySpawner.AddDefenderType(defenderType);
         }
     }
 
