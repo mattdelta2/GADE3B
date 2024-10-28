@@ -157,9 +157,10 @@ public class EnemySpawner : MonoBehaviour
         Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
         // Adjust the y position based on the terrain height at the x and z position
-        spawnPoint.y = terrain.SampleHeight(spawnPoint);
+        spawnPoint.y = terrain.SampleHeight(spawnPoint) + 2.5f;
 
-        if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 30f, NavMesh.AllAreas))
+
         {
             spawnPoint = hit.position;
 
@@ -192,7 +193,7 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    
+
 
     private GameObject SelectEnemyTypeForWave()
     {

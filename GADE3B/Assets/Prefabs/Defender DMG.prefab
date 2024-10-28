@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defenderType: DMG
   range: 60
-  damage: 20
+  damage: 15
   shootingInterval: 1.5
   projectilePrefab: {fileID: 4878657982279946229, guid: 24128214896972c4eaca11aa4900e061, type: 3}
   health: 50
