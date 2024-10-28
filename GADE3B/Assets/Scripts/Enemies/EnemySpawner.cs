@@ -20,6 +20,9 @@ public class EnemySpawner : MonoBehaviour
     public int numberOfSpawnPoints = 8;  // Number of spawn points around the tower
     public float minimumSpawnDistanceFromTower = 20f;  // Minimum distance from the tower to spawn enemies
     public float defenderCheckRadius = 10f;  // Distance to check for nearby defenders to avoid spawning near them
+    public int maxConcurrentEnemies = 10; // Set this to the desired limit
+    private int currentEnemyCount = 0; // Track how many enemies are active
+
 
     private List<Vector3> spawnPoints = new List<Vector3>();
     private bool spawningEnabled = false;
@@ -152,15 +155,12 @@ public class EnemySpawner : MonoBehaviour
 
     public void SpawnEnemy()
     {
-        if (spawnPoints.Count == 0) return;
+        if (spawnPoints.Count == 0 || currentEnemyCount >= maxConcurrentEnemies) return;
 
         Vector3 spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Count)];
-
-        // Adjust the y position based on the terrain height at the x and z position
         spawnPoint.y = terrain.SampleHeight(spawnPoint) + 2.5f;
 
         if (NavMesh.SamplePosition(spawnPoint, out NavMeshHit hit, 30f, NavMesh.AllAreas))
-
         {
             spawnPoint = hit.position;
 
@@ -176,15 +176,14 @@ public class EnemySpawner : MonoBehaviour
                 NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
                 if (agent != null)
                 {
-                    // Warp the agent to ensure it's placed correctly on the terrain
                     agent.Warp(spawnPoint);
                     agent.SetDestination(mainTowerController.transform.position);
 
-                    // Stuck detection and fallback
                     StartCoroutine(CheckIfStuck(agent, enemyController));
                 }
 
                 enemyManager.AddEnemy(enemyController);
+                currentEnemyCount++; // Increment the count of active enemies
             }
         }
         else
@@ -192,6 +191,7 @@ public class EnemySpawner : MonoBehaviour
             Debug.LogError("Spawn point is not valid on the NavMesh.");
         }
     }
+
 
 
 
@@ -239,12 +239,14 @@ public class EnemySpawner : MonoBehaviour
     {
         enemiesInCurrentWave--;
         enemiesDefeatedInWave++;
+        currentEnemyCount--; // Decrement the count of active enemies
 
         if (enemiesInCurrentWave <= 0)
         {
             Debug.Log($"Wave {currentWave - 1} complete. Enemies defeated: {enemiesDefeatedInWave}");
         }
     }
+
 
     public void RespawnEnemy(GameObject enemy)
     {

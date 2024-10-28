@@ -300,7 +300,8 @@ MonoBehaviour:
   defenderManager: {fileID: 1987939577}
   numberOfSpawnPoints: 8
   minimumSpawnDistanceFromTower: 50
-  defenderCheckRadius: 10
+  defenderCheckRadius: 50
+  maxConcurrentEnemies: 10
   waveText: {fileID: 1201105769}
   enemyManager: {fileID: 1450549545}
   playerHealth: 100

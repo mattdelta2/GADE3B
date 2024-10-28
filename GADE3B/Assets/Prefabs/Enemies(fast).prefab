@@ -200,13 +200,13 @@ NavMeshAgent:
   m_GameObject: {fileID: 2496269066903493894}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 10
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
+  m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
@@ -228,13 +228,13 @@ MonoBehaviour:
   health: 35
   maxHealth: 35
   damageAmount: 10
-  range: 20
+  range: 35
   tower: {fileID: 0}
   currentTarget: {fileID: 0}
   projectilePrefab: {fileID: 1135219151009668403, guid: c306e3a98c06c664aa6ced6204466b72, type: 3}
   shootProjectile: {fileID: 3895806755157634820}
   healthBarPrefab: {fileID: 5828972135890562829, guid: 84760d9069c2c7844ac9215916dee36d, type: 3}
-  stuckThreshold: 10
+  stuckThreshold: 1.5
   enemySpawner: {fileID: 0}
   shootingInterval: 2
   moveSpeed: 5
@@ -300,7 +300,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7675029157288190674, guid: 487a08886486a2e4da63508ccb9463e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 2.11
       objectReference: {fileID: 0}
     - target: {fileID: 7675029157288190674, guid: 487a08886486a2e4da63508ccb9463e6, type: 3}
       propertyPath: m_LocalPosition.z
