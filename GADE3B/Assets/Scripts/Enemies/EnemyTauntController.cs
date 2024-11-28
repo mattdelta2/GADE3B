@@ -7,6 +7,7 @@ public class EnemyTauntController : EnemyController
     public float tauntCooldown = 5f;     // Cooldown for the taunt ability
     public float tauntDuration = 1.5f;   // Duration of the taunt effect
     private bool canTaunt = true;        // Whether the enemy can taunt
+    private float tauntRadius = 25f;
 
     protected override void Update()
     {
@@ -50,17 +51,14 @@ public class EnemyTauntController : EnemyController
 
     private void TauntNearbyDefenders()
     {
-        Collider[] hitDefenders = Physics.OverlapSphere(transform.position, range);
-        foreach (Collider defenderCollider in hitDefenders)
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, tauntRadius);
+
+        foreach (var collider in hitColliders)
         {
-            if (defenderCollider.CompareTag("Defender"))
+            DefenderController defender = collider.GetComponent<DefenderController>();
+            if (defender != null)
             {
-                DefenderController defender = defenderCollider.GetComponent<DefenderController>();
-                if (defender != null)
-                {
-                    // Make the defender target this enemy for the taunt duration
-                    defender.TargetEnemy(this);
-                }
+                defender.TargetEnemy(this.transform);
             }
         }
     }
