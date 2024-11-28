@@ -16,40 +16,62 @@ public class DefenderPlacementManager : MonoBehaviour
 
     private GameObject selectedDefenderPrefab; // The currently selected defender prefab
     public bool isPlacing = false;          // Track whether we're in placement mode
+    public bool isUpgrading = false;        // Track whether we're in upgrade mode
     public GameObject defenderSelectionUI;  // Reference to the UI containing the defender selection buttons
 
     private void Update()
     {
-        // If we're in placement mode and a defender has been selected
         if (isPlacing && selectedDefenderPrefab != null)
         {
             if (Input.GetMouseButtonDown(0)) // Left mouse button
             {
-                TryPlaceDefender(); // Try to place the selected defender
+                TryPlaceDefender();
+            }
+        }
+
+        if (isUpgrading)
+        {
+            if (Input.GetMouseButtonDown(0)) // Left mouse button
+            {
+                TryUpgradeDefender();
             }
         }
     }
 
-    // Method to enter/exit placement mode
+    // Toggle placement mode
     public void TogglePlacementMode(bool toggle)
     {
         isPlacing = toggle;
+        isUpgrading = false;
 
-        // Show the defender selection UI only when in placement mode
         if (defenderSelectionUI != null)
         {
-            defenderSelectionUI.SetActive(isPlacing); // Show or hide the selection UI
+            defenderSelectionUI.SetActive(isPlacing);
         }
 
-        Time.timeScale = isPlacing ? 0.1f : 1.0f; // Slow down time when in placement mode
+        Time.timeScale = isPlacing ? 0.1f : 1.0f;
 
         if (!isPlacing)
         {
-            selectedDefenderPrefab = null; // Clear the selected defender when exiting placement mode
+            selectedDefenderPrefab = null;
         }
     }
 
-    // Method to select the defender (called by the UI buttons)
+    // Toggle upgrade mode
+    public void ToggleUpgradeMode(bool toggle)
+    {
+        isUpgrading = toggle;
+        isPlacing = false;
+
+        if (defenderSelectionUI != null)
+        {
+            defenderSelectionUI.SetActive(false);
+        }
+
+        Time.timeScale = isUpgrading ? 0.1f : 1.0f;
+    }
+
+    // Select defender for placement
     public void SelectDefender(int defenderIndex)
     {
         if (defenderPrefabs == null || defenderPrefabs.Length == 0)
@@ -69,7 +91,6 @@ public class DefenderPlacementManager : MonoBehaviour
         }
     }
 
-    // Method to try placing the selected defender
     private void TryPlaceDefender()
     {
         if (selectedDefenderPrefab == null)
@@ -85,7 +106,6 @@ public class DefenderPlacementManager : MonoBehaviour
         {
             Vector3 spawnPosition = hit.point;
 
-            // Check if the spawn position is valid
             if (IsValidDefenderPosition(spawnPosition))
             {
                 PlaceDefenderAtPosition(spawnPosition);
@@ -95,21 +115,37 @@ public class DefenderPlacementManager : MonoBehaviour
                 Debug.LogError("Invalid defender placement position.");
             }
         }
-        else
+    }
+
+    private void TryUpgradeDefender()
+    {
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
         {
-            Debug.LogError("Raycast did not hit the terrain layer.");
+            DefenderController defender = hit.collider.GetComponent<DefenderController>();
+
+            if (defender != null)
+            {
+                if (gameManager.SpendGold(10)) // Upgrade cost
+                {
+                    defender.UpgradeDefender();
+                }
+                else
+                {
+                    Debug.LogError("Not enough gold to upgrade the defender.");
+                }
+            }
+            else
+            {
+                Debug.LogError("No defender found to upgrade.");
+            }
         }
     }
 
-    // Helper to check if the defender's position is valid
     private bool IsValidDefenderPosition(Vector3 position)
     {
-        if (pathManager == null)
-        {
-            Debug.LogError("PathManager reference is missing.");
-            return false;
-        }
-
         foreach (Vector3 defenderPosition in pathManager.defenderPositions)
         {
             if (Vector3.Distance(position, defenderPosition) <= placementThreshold)
@@ -121,48 +157,35 @@ public class DefenderPlacementManager : MonoBehaviour
         return false;
     }
 
-    // Place the selected defender at the given position
     private void PlaceDefenderAtPosition(Vector3 spawnPosition)
     {
-        if (gameManager.SpendGold(5)) // Deduct gold if the player has enough
+        if (gameManager.SpendGold(5)) // Deduct gold
         {
-            spawnPosition.y += 0.5f; // Adjust height
+            spawnPosition.y += 0.5f;
 
             GameObject defender = Instantiate(selectedDefenderPrefab, spawnPosition, Quaternion.identity);
 
-            // Add NavMeshObstacle to the placed defender
             if (!defender.GetComponent<NavMeshObstacle>())
             {
                 NavMeshObstacle navObstacle = defender.AddComponent<NavMeshObstacle>();
                 navObstacle.carving = true;
             }
 
-            // Notify the PathManager of the new defender position
             pathManager.AddDefenderPosition(defender.transform.position);
-
-            // Notify the EnemySpawner to update the defender types based on the placed defender
             NotifyEnemySpawner(defender);
 
-            // Rebuild the NavMesh
             StartCoroutine(RebakeNavMeshAndRecalculatePaths());
 
-            // Allow placement mode to stay active for more placements
-            selectedDefenderPrefab = null; // Clear the selection for the next defender
-        }
-        else
-        {
-            Debug.LogError("Not enough gold to place the defender.");
+            selectedDefenderPrefab = null;
         }
     }
 
     private void NotifyEnemySpawner(GameObject defender)
     {
-        // Check defender type and notify the EnemySpawner about the placed defender type
         DefenderController defenderController = defender.GetComponent<DefenderController>();
         if (defenderController != null)
         {
-            string defenderType = defenderController.defenderType; // Assuming defenders have a defenderType field
-            enemySpawner.AddDefenderType(defenderType);
+            enemySpawner.AddDefenderType(defenderController.defenderType);
         }
     }
 
@@ -170,10 +193,10 @@ public class DefenderPlacementManager : MonoBehaviour
     {
         if (navMeshSurface != null)
         {
-            navMeshSurface.BuildNavMesh(); // Rebake the entire NavMesh
+            navMeshSurface.BuildNavMesh();
         }
 
-        yield return new WaitForSecondsRealtime(0.1f); // Small delay
+        yield return new WaitForSecondsRealtime(0.1f);
 
         RecalculateEnemyPaths();
     }
@@ -183,10 +206,7 @@ public class DefenderPlacementManager : MonoBehaviour
         EnemyController[] enemies = FindObjectsOfType<EnemyController>();
         foreach (EnemyController enemy in enemies)
         {
-            if (enemy != null)
-            {
-                enemy.RecalculatePath(); // Update enemy pathfinding
-            }
+            enemy?.RecalculatePath();
         }
     }
 }

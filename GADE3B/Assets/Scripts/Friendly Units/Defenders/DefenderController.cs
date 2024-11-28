@@ -19,37 +19,31 @@ public class DefenderController : MonoBehaviour
     public float maxHealth = 50f;
     public GameObject healthBarPrefab;
 
-    public float shootingTimer = 0f;
-    public Transform target;
-    public Transform shootProjectile;
+    [Header("Upgrade Settings")]
+    public int upgradeLevel = 0; // Tracks the current upgrade level
+    public int maxUpgrades = 2; // Max number of upgrades
+    public List<GameObject> upgradePrefabs; // List of prefabs for each upgrade level
+
+    protected float shootingTimer = 0f; // Changed to protected
+    protected Transform target;         // Changed to protected
+    protected Transform shootProjectile;
 
     private GameObject healthBar;
     private Slider healthBarSlider;
 
-    [Header("Upgrade Settings")]
-    public int upgradeLevel = 0; // Tracks current upgrade level
-    public int maxUpgrades = 2; // Max number of upgrades
-    public List<Sprite> upgradeSprites; // Sprites for each upgrade level
-    public List<float> healthUpgrades; // Health increase for each level
-    public List<float> damageUpgrades; // Damage increase for each level
-    public List<float> rangeUpgrades;  // Range increase for each level
-    public List<float> shootingIntervalUpgrades; // Shooting interval changes
-
-    private SpriteRenderer spriteRenderer;
-
     protected virtual void Start()
     {
         shootProjectile = transform.Find("shootProjectile");
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        if (shootProjectile == null)
+        {
+            Debug.LogWarning("shootProjectile not found on Defender. Please ensure a child object named 'shootProjectile' exists.");
+        }
 
         // Initialize health bar
         healthBar = Instantiate(healthBarPrefab, transform.position + Vector3.up * 2, Quaternion.identity, transform);
         healthBarSlider = healthBar.GetComponentInChildren<Slider>();
         healthBarSlider.maxValue = maxHealth;
         healthBarSlider.value = health;
-
-        UpdateAppearance(); // Set initial appearance
     }
 
     protected virtual void Update()
@@ -83,44 +77,44 @@ public class DefenderController : MonoBehaviour
 
     public void UpgradeDefender()
     {
-        if (upgradeLevel < maxUpgrades)
+        if (upgradeLevel < maxUpgrades && upgradeLevel < upgradePrefabs.Count)
         {
+            // Increment upgrade level
             upgradeLevel++;
 
-            // Apply upgrades
-            if (upgradeLevel < healthUpgrades.Count)
+            // Get the upgraded prefab for the current level
+            GameObject upgradedPrefab = upgradePrefabs[upgradeLevel - 1]; // Upgrade level starts at 0, so use (level - 1)
+
+            if (upgradedPrefab != null)
             {
-                maxHealth += healthUpgrades[upgradeLevel];
-                health = maxHealth;
+                // Instantiate the upgraded defender at the same position and rotation
+                GameObject upgradedDefender = Instantiate(upgradedPrefab, transform.position, transform.rotation, transform.parent);
+
+                // Transfer current stats to the new defender
+                DefenderController newDefender = upgradedDefender.GetComponent<DefenderController>();
+                if (newDefender != null)
+                {
+                    newDefender.health = health;
+                    newDefender.maxHealth = maxHealth;
+                }
+
+                // Destroy the current defender
+                Destroy(gameObject);
+
+                Debug.Log($"Defender upgraded to level {upgradeLevel} using prefab: {upgradedPrefab.name}");
             }
-
-            if (upgradeLevel < damageUpgrades.Count)
-                damage += damageUpgrades[upgradeLevel];
-
-            if (upgradeLevel < rangeUpgrades.Count)
-                range += rangeUpgrades[upgradeLevel];
-
-            if (upgradeLevel < shootingIntervalUpgrades.Count)
-                shootingInterval -= shootingIntervalUpgrades[upgradeLevel];
-
-            UpdateAppearance();
-            Debug.Log($"Defender upgraded to level {upgradeLevel}. Health: {health}, Damage: {damage}, Range: {range}, Shooting Interval: {shootingInterval}");
+            else
+            {
+                Debug.LogWarning($"No prefab found for upgrade level {upgradeLevel}");
+            }
         }
         else
         {
-            Debug.Log("Maximum upgrade level reached.");
+            Debug.Log("Maximum upgrade level reached or no prefab available.");
         }
     }
 
-    private void UpdateAppearance()
-    {
-        if (spriteRenderer != null && upgradeLevel < upgradeSprites.Count)
-        {
-            spriteRenderer.sprite = upgradeSprites[upgradeLevel];
-        }
-    }
-
-    private void ShootAtEnemy()
+    protected void ShootAtEnemy()
     {
         if (projectilePrefab != null && target != null)
         {
@@ -135,7 +129,7 @@ public class DefenderController : MonoBehaviour
         }
     }
 
-    private void FindClosestEnemy()
+    protected void FindClosestEnemy()
     {
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, range);
         float closestDistance = Mathf.Infinity;

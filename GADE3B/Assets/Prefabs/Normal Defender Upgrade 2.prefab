@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1728243342109581611}
   - component: {fileID: 3433661887108366391}
   - component: {fileID: 862068650174398450}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Defender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: -6377319813243936778}
   - component: {fileID: 2026137672002777959}
   - component: {fileID: 276676660820172426}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Normal Defender Upgrade 2
   m_TagString: Defender
   m_Icon: {fileID: 0}
@@ -162,9 +162,9 @@ MonoBehaviour:
   health: 60
   maxHealth: 60
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  shootingTimer: 0
-  target: {fileID: 0}
-  shootProjectile: {fileID: 5095959944007004999}
+  upgradeLevel: 2
+  maxUpgrades: 2
+  upgradePrefabs: []
 --- !u!208 &2026137672002777959
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -211,7 +211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5095959944007004999}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shootProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -293,9 +293,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6956857553695645789, guid: f1b1bb905d6fc75459ca1408b282c5b4, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f1b1bb905d6fc75459ca1408b282c5b4, type: 3}
       propertyPath: m_Name
       value: tower_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f1b1bb905d6fc75459ca1408b282c5b4, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

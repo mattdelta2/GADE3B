@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6172210299985789980}
   - component: {fileID: -242395953991005787}
   - component: {fileID: -7561568215060766294}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DMG Defender Upgrade 1
   m_TagString: Defender
   m_Icon: {fileID: 0}
@@ -116,9 +116,9 @@ MonoBehaviour:
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  shootingTimer: 0
-  target: {fileID: 0}
-  shootProjectile: {fileID: 3094126515371498983}
+  upgradeLevel: 1
+  maxUpgrades: 2
+  upgradePrefabs: []
 --- !u!1 &7582764432183811133
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 7867853962512214865}
   - component: {fileID: 3988075315509042816}
   - component: {fileID: 5362849240765164231}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Defender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3094126515371498983}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shootProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,6 +263,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3169277031660254568}
     m_Modifications:
+    - target: {fileID: 823344018996056538, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3612213961184734284, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4878281747785552841, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -318,6 +326,10 @@ PrefabInstance:
     - target: {fileID: 5258220621811665267, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
       propertyPath: m_Name
       value: tower_13 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5258220621811665267, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6050603399216916646, guid: 46a047685f2ae9c4c8c86f9712d61d4b, type: 3}
       propertyPath: m_Materials.Array.data[0]

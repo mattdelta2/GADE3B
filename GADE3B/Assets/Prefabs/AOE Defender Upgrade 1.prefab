@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6784693881148765987}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shootProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 345557215611877402}
   - component: {fileID: 2025602127743500892}
   - component: {fileID: 7578667774418861496}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Defender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 5638771232441124114}
   - component: {fileID: 5944964504409066875}
   - component: {fileID: -7895127905223546701}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AOE Defender Upgrade 1
   m_TagString: Defender
   m_Icon: {fileID: 0}
@@ -206,10 +206,10 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 12.99107, y: 28.235453, z: 12.659096}
+  m_Center: {x: 0.8529682, y: 13.617728, z: 0.12846279}
 --- !u!114 &-7895127905223546701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,9 +230,9 @@ MonoBehaviour:
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  shootingTimer: 0
-  target: {fileID: 0}
-  shootProjectile: {fileID: 6784693881148765987}
+  upgradeLevel: 1
+  maxUpgrades: 2
+  upgradePrefabs: []
   bombProjectilePrefab: {fileID: 4878657982279946229, guid: b3a475ed21375c14cb15fcd6363da345, type: 3}
   shootPoint: {fileID: 6784693881148765987}
   bombExplosionRadius: 30
@@ -246,9 +246,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 928628667117985224}
     m_Modifications:
+    - target: {fileID: -5027382149504960386, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Size.x
+      value: 6.269059
+      objectReference: {fileID: 0}
+    - target: {fileID: -5027382149504960386, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Size.z
+      value: 6.203889
+      objectReference: {fileID: 0}
+    - target: {fileID: -5027382149504960386, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Center.x
+      value: 0.33488512
+      objectReference: {fileID: 0}
+    - target: {fileID: -5027382149504960386, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Center.z
+      value: 0.24918759
+      objectReference: {fileID: 0}
     - target: {fileID: 344158834277739884, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
       propertyPath: m_Name
       value: tower_12 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 344158834277739884, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1120659696665999318, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
       propertyPath: m_LocalScale.x
@@ -306,6 +326,14 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: d4a87f966d947954eab585359e616b54, type: 2}
+    - target: {fileID: 4642363148119341457, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5150733561214873798, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7772005273548405895, guid: 0d8250cd955d89b4386ea4b6b5e2d1fa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

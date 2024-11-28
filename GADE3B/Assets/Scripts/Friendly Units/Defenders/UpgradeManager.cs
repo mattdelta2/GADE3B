@@ -1,60 +1,98 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class UpgradeManager : MonoBehaviour
 {
-    public Button upgradeButton; // Reference to the upgrade button
-    private DefenderController selectedDefender; // Currently selected defender
+    public GameObject selectedDefender;  // The defender to upgrade
+    public GoldManager goldManager;      // Reference to the GoldManager
+    public int upgradeCost = 10;         // Cost to upgrade a defender
 
-    void Start()
-    {
-        // Hide the upgrade button initially
-        upgradeButton.gameObject.SetActive(false);
-        upgradeButton.onClick.AddListener(UpgradeSelectedDefender);
-    }
+    public LayerMask defenderLayer;      // LayerMask to ensure only defenders are selected
 
-    void Update()
+    public void Update()
     {
-        // Check for mouse clicks to select a defender
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)) // Left-click to select a defender
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                DefenderController defender = hit.collider.GetComponent<DefenderController>();
-                if (defender != null)
-                {
-                    selectedDefender = defender;
-                    ShowUpgradeButton(defender);
-                }
-                else
-                {
-                    selectedDefender = null;
-                    upgradeButton.gameObject.SetActive(false);
-                }
-            }
+            SelectDefender();
         }
     }
 
-    private void ShowUpgradeButton(DefenderController defender)
+    /// <summary>
+    /// Selects a defender based on player input (mouse click).
+    /// </summary>
+    private void SelectDefender()
     {
-        // Only show the button if upgrades are available
-        if (defender.upgradeLevel < defender.maxUpgrades)
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        // Draw debug line in the Scene view
+        Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 2f);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, defenderLayer))
         {
-            upgradeButton.gameObject.SetActive(true);
+            DefenderController defender = hit.collider.GetComponent<DefenderController>();
+            if (defender != null)
+            {
+                selectedDefender = hit.collider.gameObject;
+                Debug.Log($"Defender selected: {selectedDefender.name}");
+            }
+            else
+            {
+                Debug.LogWarning("The selected object is not a defender.");
+            }
         }
         else
         {
-            upgradeButton.gameObject.SetActive(false);
+            Debug.LogWarning("No valid defender selected.");
+            selectedDefender = null;
         }
     }
 
-    private void UpgradeSelectedDefender()
+    /// <summary>
+    /// Attempts to upgrade the selected defender.
+    /// </summary>
+    public void TryUpgradeDefender()
     {
-        if (selectedDefender != null)
+        if (selectedDefender == null)
         {
-            selectedDefender.UpgradeDefender();
-            upgradeButton.gameObject.SetActive(false); // Hide button after upgrade
+            Debug.LogWarning("No defender selected for upgrade.");
+            return;
         }
+
+        DefenderController defender = selectedDefender.GetComponent<DefenderController>();
+        if (defender == null)
+        {
+            Debug.LogWarning("Selected object does not have a DefenderController.");
+            return;
+        }
+
+        if (goldManager == null)
+        {
+            Debug.LogError("GoldManager is not assigned.");
+            return;
+        }
+
+        if (goldManager.GetGold() >= upgradeCost && defender.upgradeLevel < defender.maxUpgrades)
+        {
+            goldManager.SpendGold(upgradeCost);
+            defender.UpgradeDefender();
+            Debug.Log("Defender upgraded successfully.");
+        }
+        else if (defender.upgradeLevel >= defender.maxUpgrades)
+        {
+            Debug.LogWarning("Defender has already reached the maximum upgrade level.");
+        }
+        else
+        {
+            Debug.LogWarning("Not enough gold to upgrade the defender.");
+        }
+    }
+
+    /// <summary>
+    /// Clear the currently selected defender (e.g., when exiting upgrade mode).
+    /// </summary>
+    public void ClearSelection()
+    {
+        selectedDefender = null;
     }
 }

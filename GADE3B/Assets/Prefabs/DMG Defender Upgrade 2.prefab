@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6172210299985789980}
   - component: {fileID: -242395953991005787}
   - component: {fileID: -7561568215060766294}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DMG Defender Upgrade 2
   m_TagString: Defender
   m_Icon: {fileID: 0}
@@ -116,9 +116,9 @@ MonoBehaviour:
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  shootingTimer: 0
-  target: {fileID: 0}
-  shootProjectile: {fileID: 3094126515371498983}
+  upgradeLevel: 2
+  maxUpgrades: 2
+  upgradePrefabs: []
 --- !u!1 &7582764432183811133
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 7867853962512214865}
   - component: {fileID: 3988075315509042816}
   - component: {fileID: 5362849240765164231}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Defender
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,7 +233,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3094126515371498983}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shootProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,9 +263,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3169277031660254568}
     m_Modifications:
+    - target: {fileID: 68665048810885010, guid: d4dda24e4ef1b58439df3a45ca806d09, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2799382407910198517, guid: d4dda24e4ef1b58439df3a45ca806d09, type: 3}
       propertyPath: m_Name
       value: tower_3 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2799382407910198517, guid: d4dda24e4ef1b58439df3a45ca806d09, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3283889230728091215, guid: d4dda24e4ef1b58439df3a45ca806d09, type: 3}
       propertyPath: m_LocalScale.x
@@ -323,6 +331,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ad51808147893aa4daa19dfad93c9990, type: 2}
+    - target: {fileID: 7664357879661749963, guid: d4dda24e4ef1b58439df3a45ca806d09, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
