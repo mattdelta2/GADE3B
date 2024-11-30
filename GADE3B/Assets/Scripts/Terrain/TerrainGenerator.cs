@@ -1,39 +1,59 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
-using Random = UnityEngine.Random; // Import NavMesh functionality
+using Random = UnityEngine.Random;
 
 public class TerrainGenerator : MonoBehaviour
 {
     [Header("Terrain Settings")]
-    public Terrain terrain; // Assign the Terrain object
-    public int width = 256; // Terrain width
-    public int depth = 256; // Terrain depth
-    public int height; // Terrain height, randomized
-    public float scale; // Scale for Perlin noise
+    public Terrain terrain;              // Assign the Terrain object
+    public int width = 256;              // Terrain width
+    public int depth = 256;              // Terrain depth
+    public int height;                   // Terrain height, randomized
+    public float scale;                  // Scale for Perlin noise
 
     [Header("Randomization Offsets")]
-    public float offsetX; // Random X offset
-    public float offsetZ; // Random Z offset
+    public float offsetX;                // Random X offset
+    public float offsetZ;                // Random Z offset
 
     [Header("NavMesh")]
     private NavMeshSurface navMeshSurface; // NavMeshSurface for navigation
-    private bool navMeshReady = false; // Flag to check NavMesh readiness
+    private bool navMeshReady = false;     // Flag to check NavMesh readiness
 
+    public event Action OnTerrainGenerated; // Event to notify when terrain generation is complete
 
-
-
-
-    public event Action OnTerrainGenerated;
     void Start()
     {
-
+        Debug.Log("Starting TerrainGenerator...");
         AssignTerrain();
+
+        if (terrain == null)
+        {
+            Debug.LogError("No terrain assigned or found in the scene.");
+            return;
+        }
+
         RandomizeTerrainSettings();
+        Debug.Log($"Randomized Terrain Settings: Height={height}, Scale={scale}, Offsets=({offsetX}, {offsetZ})");
+
         terrain.terrainData = GenerateTerrain(terrain.terrainData);
+        Debug.Log("Terrain data generated.");
+
         AssignOrCreateNavMeshSurface();
-        Invoke(nameof(BakeNavMesh), 0.5f);
+
+        if (navMeshSurface != null)
+        {
+            // Delay NavMesh baking slightly to ensure terrain is fully generated
+            Invoke(nameof(BakeNavMesh), 0.5f);
+        }
+        else
+        {
+            Debug.LogError("NavMeshSurface component is missing.");
+        }
+
+        // Notify any listeners that terrain generation is complete
         OnTerrainGenerated?.Invoke();
+        Debug.Log("OnTerrainGenerated event invoked.");
     }
 
     /// <summary>
@@ -44,6 +64,7 @@ public class TerrainGenerator : MonoBehaviour
         if (terrain == null)
         {
             terrain = GetComponentInChildren<Terrain>();
+            Debug.Log(terrain != null ? "Terrain assigned." : "No terrain found in children.");
         }
     }
 
@@ -61,8 +82,6 @@ public class TerrainGenerator : MonoBehaviour
     /// <summary>
     /// Generate terrain data based on Perlin noise.
     /// </summary>
-    /// <param name="terrainData">TerrainData object</param>
-    /// <returns>Modified TerrainData</returns>
     private TerrainData GenerateTerrain(TerrainData terrainData)
     {
         terrainData.heightmapResolution = width + 1;
@@ -129,6 +148,10 @@ public class TerrainGenerator : MonoBehaviour
             navMeshSurface = terrain.gameObject.AddComponent<NavMeshSurface>();
             Debug.Log("Created a new NavMeshSurface.");
         }
+        else
+        {
+            Debug.Log("NavMeshSurface already exists.");
+        }
     }
 
     /// <summary>
@@ -136,9 +159,16 @@ public class TerrainGenerator : MonoBehaviour
     /// </summary>
     private void BakeNavMesh()
     {
-        navMeshSurface.BuildNavMesh();
-        Debug.Log("NavMesh baked successfully.");
-        navMeshReady = true;
+        if (navMeshSurface != null)
+        {
+            navMeshSurface.BuildNavMesh();
+            navMeshReady = true;
+            Debug.Log("NavMesh baked successfully.");
+        }
+        else
+        {
+            Debug.LogError("NavMeshSurface is null. Cannot bake NavMesh.");
+        }
     }
 
     /// <summary>
