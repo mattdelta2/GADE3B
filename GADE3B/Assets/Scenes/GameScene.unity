@@ -1209,7 +1209,7 @@ GameObject:
   - component: {fileID: 1106253521}
   - component: {fileID: 1106253520}
   - component: {fileID: 1106253522}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2063,7 +2063,7 @@ GameObject:
   - component: {fileID: 1544179511}
   - component: {fileID: 1544179510}
   - component: {fileID: 1544179512}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TerrainGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2117,13 +2117,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9673036ddcbba0147abb5eeae0c35894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foliagePrefabs: []
-  maxFoliage: 50
-  minScale: 0.5
+  foliagePrefabs:
+  - {fileID: 7177261144388308913, guid: b81cbf2e5c5f79243a38b35f702577fa, type: 3}
+  - {fileID: 4091264747913813091, guid: 46bdfb857f55ca44c9a3561f2050f534, type: 3}
+  - {fileID: 862850255612718992, guid: 3d59e2fd6bc9ffb45b7683e038d1c8f0, type: 3}
+  - {fileID: 3986898429026236575, guid: 1a81a9ffbdeca024b9c1530806027dac, type: 3}
+  maxFoliage: 100
+  minScale: 1
   maxScale: 1.5
   terrainLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 128
+  terrain: {fileID: 1106253521}
 --- !u!1001 &1546273280
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -157,7 +157,7 @@ MonoBehaviour:
   defenderType: Normal
   range: 50
   damage: 10
-  shootingInterval: 0.5
+  shootingInterval: 1
   projectilePrefab: {fileID: 4878657982279946229, guid: 77e6745210468344991e193c4f258a05, type: 3}
   health: 60
   maxHealth: 60
