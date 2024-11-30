@@ -70,7 +70,11 @@
             "m_Id": "63d92a81d3894f59a033ae11ea7ce1eb"
         }
     ],
-    "m_GroupDatas": [],
+    "m_GroupDatas": [
+        {
+            "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
+        }
+    ],
     "m_StickyNoteDatas": [],
     "m_Edges": [
         {
@@ -524,10 +528,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.GroupData",
+    "m_ObjectId": "313648bf16be471e8ef7b9fc2bc8be6a",
+    "m_Title": "Scale AOE Projectile - Indicate Explosive",
+    "m_Position": {
+        "x": 10.0,
+        "y": 10.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.RemapNode",
     "m_ObjectId": "33ce044c952a42099a5c2d74c1dae347",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Remap",
     "m_DrawState": {
@@ -629,7 +644,7 @@
     "m_Type": "UnityEditor.ShaderGraph.MultiplyNode",
     "m_ObjectId": "471fa94eb63843c1bfd5e9b3cf4f4193",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Multiply",
     "m_DrawState": {
@@ -695,7 +710,7 @@
     "m_Type": "UnityEditor.ShaderGraph.MultiplyNode",
     "m_ObjectId": "4b116156acc54032a784b0bd996e09a3",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Multiply",
     "m_DrawState": {
@@ -1188,7 +1203,7 @@
     "m_Type": "UnityEditor.ShaderGraph.SineNode",
     "m_ObjectId": "a1cedbbfebbf4ae8855ba3786d681261",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Sine",
     "m_DrawState": {
@@ -1485,7 +1500,7 @@
     "m_Type": "UnityEditor.ShaderGraph.PositionNode",
     "m_ObjectId": "cce8e20225274f728379ea397aa4a5e4",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Position",
     "m_DrawState": {
@@ -1522,7 +1537,7 @@
     "m_Type": "UnityEditor.ShaderGraph.TimeNode",
     "m_ObjectId": "d4583a323003498aa0cd610de1fc24d2",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Time",
     "m_DrawState": {
@@ -1567,7 +1582,7 @@
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "e90319bba6244bce8c7a84f995655863",
     "m_Group": {
-        "m_Id": ""
+        "m_Id": "313648bf16be471e8ef7b9fc2bc8be6a"
     },
     "m_Name": "Property",
     "m_DrawState": {
