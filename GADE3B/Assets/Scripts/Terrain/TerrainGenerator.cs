@@ -1,26 +1,33 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 public class TerrainGenerator : MonoBehaviour
 {
     [Header("Terrain Settings")]
-    public Terrain terrain;              // Assign the Terrain object
-    public int width = 256;              // Terrain width
-    public int depth = 256;              // Terrain depth
-    public int height;                   // Terrain height, randomized
-    public float scale;                  // Scale for Perlin noise
+    public Terrain terrain;
+    public int width = 256;
+    public int depth = 256;
+    public int height;
+    public float scale;
 
     [Header("Randomization Offsets")]
-    public float offsetX;                // Random X offset
-    public float offsetZ;                // Random Z offset
+    public float offsetX;
+    public float offsetZ;
 
     [Header("NavMesh")]
-    private NavMeshSurface navMeshSurface; // NavMeshSurface for navigation
-    private bool navMeshReady = false;     // Flag to check NavMesh readiness
+    private NavMeshSurface navMeshSurface;
+    private bool navMeshReady = false;
 
-    public event Action OnTerrainGenerated; // Event to notify when terrain generation is complete
+    public event Action OnTerrainGenerated;
+
+    [Header("Foliage Settings")]
+    public List<GameObject> foliagePrefabs;
+    public int maxFoliage = 100;
+    public float minScale = 0.5f;
+    public float maxScale = 1.5f;
 
     void Start()
     {
@@ -43,7 +50,6 @@ public class TerrainGenerator : MonoBehaviour
 
         if (navMeshSurface != null)
         {
-            // Delay NavMesh baking slightly to ensure terrain is fully generated
             Invoke(nameof(BakeNavMesh), 0.5f);
         }
         else
@@ -51,14 +57,12 @@ public class TerrainGenerator : MonoBehaviour
             Debug.LogError("NavMeshSurface component is missing.");
         }
 
-        // Notify any listeners that terrain generation is complete
         OnTerrainGenerated?.Invoke();
         Debug.Log("OnTerrainGenerated event invoked.");
+
+        GenerateFoliage();
     }
 
-    /// <summary>
-    /// Assign the Terrain component if not already assigned.
-    /// </summary>
     private void AssignTerrain()
     {
         if (terrain == null)
@@ -68,9 +72,6 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Randomize terrain properties such as height, scale, and offsets.
-    /// </summary>
     private void RandomizeTerrainSettings()
     {
         height = Random.Range(10, 20);
@@ -79,9 +80,6 @@ public class TerrainGenerator : MonoBehaviour
         offsetZ = Random.Range(0f, 9999f);
     }
 
-    /// <summary>
-    /// Generate terrain data based on Perlin noise.
-    /// </summary>
     private TerrainData GenerateTerrain(TerrainData terrainData)
     {
         terrainData.heightmapResolution = width + 1;
@@ -90,9 +88,6 @@ public class TerrainGenerator : MonoBehaviour
         return terrainData;
     }
 
-    /// <summary>
-    /// Generate a heightmap using Perlin noise.
-    /// </summary>
     private float[,] GenerateHeights()
     {
         float[,] heights = new float[width, depth];
@@ -106,9 +101,6 @@ public class TerrainGenerator : MonoBehaviour
         return heights;
     }
 
-    /// <summary>
-    /// Calculate Perlin noise value for a given point.
-    /// </summary>
     private float CalculateHeight(int x, int z)
     {
         float xCoord = (float)x / width * scale + offsetX;
@@ -116,9 +108,6 @@ public class TerrainGenerator : MonoBehaviour
         return Mathf.PerlinNoise(xCoord, zCoord);
     }
 
-    /// <summary>
-    /// Smooth the heightmap to reduce sharp terrain features.
-    /// </summary>
     private float[,] SmoothHeights(float[,] heights)
     {
         for (int x = 1; x < width - 1; x++)
@@ -137,9 +126,6 @@ public class TerrainGenerator : MonoBehaviour
         return heights;
     }
 
-    /// <summary>
-    /// Assign or create the NavMeshSurface component.
-    /// </summary>
     private void AssignOrCreateNavMeshSurface()
     {
         navMeshSurface = terrain.gameObject.GetComponent<NavMeshSurface>();
@@ -154,9 +140,6 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Bake the NavMesh for pathfinding.
-    /// </summary>
     private void BakeNavMesh()
     {
         if (navMeshSurface != null)
@@ -171,9 +154,6 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Re-bake the NavMesh during runtime if terrain changes.
-    /// </summary>
     public void ReBakeNavMesh()
     {
         if (navMeshSurface != null)
@@ -187,11 +167,63 @@ public class TerrainGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Check if the NavMesh is ready.
-    /// </summary>
     public bool IsNavMeshReady()
     {
         return navMeshReady;
+    }
+
+    private void GenerateFoliage()
+    {
+        if (foliagePrefabs == null || foliagePrefabs.Count == 0)
+        {
+            Debug.LogError("Foliage prefabs list is empty or not assigned.");
+            return;
+        }
+
+        Debug.Log($"Starting foliage generation with {maxFoliage} instances.");
+        for (int i = 0; i < maxFoliage; i++)
+        {
+            Vector3 randomPosition = GetRandomPosition();
+            if (randomPosition != Vector3.zero)
+            {
+                GameObject prefab = foliagePrefabs[Random.Range(0, foliagePrefabs.Count)];
+                if (prefab != null)
+                {
+                    GameObject foliage = Instantiate(prefab, randomPosition, Quaternion.identity);
+                    ApplyRandomTransform(foliage);
+                    Debug.Log($"Foliage placed: {prefab.name} at position {randomPosition}");
+                }
+            }
+        }
+        Debug.Log("Foliage generation completed.");
+    }
+
+    private Vector3 GetRandomPosition()
+    {
+        float terrainWidth = terrain.terrainData.size.x;
+        float terrainLength = terrain.terrainData.size.z;
+
+        float randomX = Random.Range(0, terrainWidth);
+        float randomZ = Random.Range(0, terrainLength);
+
+        float height = terrain.SampleHeight(new Vector3(randomX, 0, randomZ));
+        if (height > 0.1f)
+        {
+            return new Vector3(randomX, height, randomZ);
+        }
+        return Vector3.zero;
+    }
+
+    private void ApplyRandomTransform(GameObject foliage)
+    {
+        float randomScale = Random.Range(minScale, maxScale);
+        foliage.transform.localScale = Vector3.one * randomScale;
+        foliage.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+
+        Collider collider = foliage.GetComponent<Collider>();
+        if (collider != null)
+        {
+            Destroy(collider);
+        }
     }
 }
