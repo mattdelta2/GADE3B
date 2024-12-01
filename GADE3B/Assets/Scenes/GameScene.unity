@@ -2089,6 +2089,19 @@ MonoBehaviour:
   scale: 5
   offsetX: 100
   offsetZ: 100
+  foliagePrefabs:
+  - {fileID: 7177261144388308913, guid: b81cbf2e5c5f79243a38b35f702577fa, type: 3}
+  - {fileID: 4091264747913813091, guid: 46bdfb857f55ca44c9a3561f2050f534, type: 3}
+  - {fileID: 862850255612718992, guid: 3d59e2fd6bc9ffb45b7683e038d1c8f0, type: 3}
+  - {fileID: 3986898429026236575, guid: 1a81a9ffbdeca024b9c1530806027dac, type: 3}
+  - {fileID: 100000, guid: da1981c3ee8ea7e4186a753e15495628, type: 3}
+  - {fileID: 100000, guid: 41ba2a6f1d128f94eba95e5213a81254, type: 3}
+  - {fileID: 100000, guid: b332dc24cbb08144da2f112f82406700, type: 3}
+  - {fileID: 100000, guid: 821158ae724ce854e920539f935295b8, type: 3}
+  - {fileID: 100000, guid: ab34fd65b601dab41915f4e874408d28, type: 3}
+  maxFoliage: 100
+  minScale: 30
+  maxScale: 50
 --- !u!4 &1544179511
 Transform:
   m_ObjectHideFlags: 0
@@ -2112,7 +2125,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544179509}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9673036ddcbba0147abb5eeae0c35894, type: 3}
   m_Name: 

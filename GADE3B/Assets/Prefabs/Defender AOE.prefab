@@ -251,7 +251,7 @@ PrefabInstance:
     - target: {fileID: 852630934906771592, guid: 769a285ea87b28d4fb384cbe7202368f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: d4a87f966d947954eab585359e616b54, type: 2}
+      objectReference: {fileID: 2100000, guid: 41b5e8bcd4cd52a43ada25aa92816b98, type: 2}
     - target: {fileID: 1213116611189225821, guid: 769a285ea87b28d4fb384cbe7202368f, type: 3}
       propertyPath: m_Name
       value: tower_9 (1)
@@ -315,7 +315,7 @@ PrefabInstance:
     - target: {fileID: 3560399270954913208, guid: 769a285ea87b28d4fb384cbe7202368f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: d4a87f966d947954eab585359e616b54, type: 2}
+      objectReference: {fileID: 2100000, guid: 41b5e8bcd4cd52a43ada25aa92816b98, type: 2}
     - target: {fileID: 5182702731941570343, guid: 769a285ea87b28d4fb384cbe7202368f, type: 3}
       propertyPath: m_Layer
       value: 3
