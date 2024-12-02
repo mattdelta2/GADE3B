@@ -89,7 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 65
   damage: 25
-  shootingInterval: 0.5
+  shootingInterval: 1
   projectilePrefab: {fileID: 4878657982279946229, guid: 24128214896972c4eaca11aa4900e061, type: 3}
   health: 50
   maxHealth: 50
@@ -116,8 +116,8 @@ MonoBehaviour:
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  upgradeLevel: 0
-  maxUpgrades: 2
+  upgradeLevel: 1
+  maxUpgrades: 3
   upgradePrefabs:
   - {fileID: 6626623205242957485, guid: 186a13200d2f3da4a95e11dd644c517e, type: 3}
   - {fileID: 6626623205242957485, guid: 1663648a6569e1e42a809a247553d5e9, type: 3}

@@ -162,8 +162,8 @@ MonoBehaviour:
   health: 60
   maxHealth: 60
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  upgradeLevel: 0
-  maxUpgrades: 2
+  upgradeLevel: 1
+  maxUpgrades: 3
   upgradePrefabs:
   - {fileID: 5417088069048846218, guid: 204bc67e5cd0c3041bf0beac7ff4e8c2, type: 3}
   - {fileID: 5417088069048846218, guid: 0026227e71beb4144863f5bda1b2a6c7, type: 3}

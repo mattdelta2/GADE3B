@@ -224,15 +224,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defenderType: AOE
   range: 60
-  damage: 20
-  shootingInterval: 0.5
+  damage: 25
+  shootingInterval: 1
   projectilePrefab: {fileID: 0}
   health: 50
   maxHealth: 50
   healthBarPrefab: {fileID: 1090469817431148418, guid: 5acc45eaaf765c540b4fcec74b78638c, type: 3}
-  upgradeLevel: 1
-  maxUpgrades: 2
-  upgradePrefabs: []
+  upgradeLevel: 2
+  maxUpgrades: 3
+  upgradePrefabs:
+  - {fileID: 7504559773371659166, guid: 54c6cbb1ee852cf48a029d027133216e, type: 3}
   bombProjectilePrefab: {fileID: 4878657982279946229, guid: b3a475ed21375c14cb15fcd6363da345, type: 3}
   shootPoint: {fileID: 6784693881148765987}
   bombExplosionRadius: 30

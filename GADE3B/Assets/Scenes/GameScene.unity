@@ -2745,7 +2745,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defenders: []
-  defenderCheckRadius: 15
+  defenderCheckRadius: 20
 --- !u!114 &1987939578
 MonoBehaviour:
   m_ObjectHideFlags: 0

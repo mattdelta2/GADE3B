@@ -228,10 +228,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: -45.799496
       objectReference: {fileID: 0}
+    - target: {fileID: -1990968323811559735, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7761c7f2aaa32794cac22aa492837b58, type: 2}
     - target: {fileID: 919132149155446097, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
       propertyPath: m_Name
       value: DefenderAOE_OnHit
       objectReference: {fileID: 0}
+    - target: {fileID: 6317578925029434746, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9c7e3392ea0b86a44a318248c74975f5, type: 2}
+    - target: {fileID: 8521902485874960664, guid: 50da81febc068874fb5f7b3a4aae684f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7761c7f2aaa32794cac22aa492837b58, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
